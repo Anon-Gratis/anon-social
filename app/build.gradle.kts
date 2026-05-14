@@ -39,8 +39,8 @@ android {
 
     defaultConfig {
         applicationId = "gratis.anon.social"
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
@@ -159,6 +159,13 @@ configurations.configureEach {
         force(libs.espresso.core)
         force(libs.androidx.test.junit)
     }
+    // Anon Social: UnifiedPush:android-connector pulls plain `tink:1.17.0`
+    // which shares ~880 classes with `tink-android:1.8.0` (transitively pulled
+    // by androidx.security:security-crypto). Plain tink doesn't contain the
+    // AndroidKeysetManager class EncryptedSharedPreferences needs, so we keep
+    // tink-android and exclude the plain artifact. UnifiedPush only needs
+    // basic Aead which tink-android:1.8.0 already provides.
+    exclude(group = "com.google.crypto.tink", module = "tink")
 }
 
 dependencies {
@@ -232,13 +239,14 @@ dependencies {
     // optional fingerprint/face shortcut. lifecycle-process already comes
     // in transitively from androidx.lifecycle 2.10.0.
     //
-    // Excluding `tink-android` because Pachli's stack already pulls the
-    // newer unified `tink:1.17.0` artifact for crypto elsewhere, and the
-    // two collide at dex time. `tink` (1.17.0) provides the same API
-    // surface security-crypto needs at runtime on Android.
-    implementation("androidx.security:security-crypto:1.1.0-alpha06") {
-        exclude(group = "com.google.crypto.tink", module = "tink-android")
-    }
+    // The tink conflict: `security-crypto:1.1.0-alpha06` needs
+    // `tink-android:1.8.0` (which contains AndroidKeysetManager, the class
+    // EncryptedSharedPreferences.create() resolves). Separately,
+    // UnifiedPush:android-connector pulls plain `tink:1.17.0` (the JVM
+    // artifact), which duplicates ~880 classes with tink-android at dex
+    // time. Resolution: globally exclude plain `tink` (see
+    // configurations.all block above), keep tink-android.
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     implementation(libs.bundles.xmldiff)
