@@ -39,8 +39,8 @@ android {
 
     defaultConfig {
         applicationId = "gratis.anon.social"
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
@@ -70,8 +70,12 @@ android {
         }
 
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Anon Social: minify disabled because tor-android's AAR ships no
+            // consumer-proguard rules and R8 strips/renames the JNI bridge
+            // methods libtor.so calls back into, crashing the app on the first
+            // bindService. Matches AnonMail / AnonMumble / AnonWhistleBlower.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (signingProps.exists()) {
                 signingConfig = signingConfigs.getByName("release")
