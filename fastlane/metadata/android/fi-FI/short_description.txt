@@ -1,0 +1,1 @@
+Monipuolinen Android-asiakas Mastodonille ja vastaaville palvelimille.

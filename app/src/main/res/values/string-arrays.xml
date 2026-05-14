@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="post_privacy_names">
+        <item>@string/post_privacy_public</item>
+        <item>@string/post_privacy_unlisted</item>
+        <item>@string/post_privacy_followers_only</item>
+    </string-array>
+
+    <string-array name="post_text_size_names">
+        <item>@string/post_text_size_smallest</item>
+        <item>@string/post_text_size_small</item>
+        <item>@string/post_text_size_medium</item>
+        <item>@string/post_text_size_large</item>
+        <item>@string/post_text_size_largest</item>
+    </string-array>
+
+    <string-array name="filter_contexts">
+        <item>@string/title_home</item>
+        <item>@string/title_notifications</item>
+        <item>@string/pref_title_public_filter_keywords</item>
+        <item>@string/pref_title_thread_filter_keywords</item>
+        <item>@string/pref_title_account_filter_keywords</item>
+    </string-array>
+
+    <string-array name="filter_actions">
+        <item>@string/filter_action_blur</item>
+        <item>@string/filter_action_warn</item>
+        <item>@string/filter_action_hide</item>
+    </string-array>
+</resources>

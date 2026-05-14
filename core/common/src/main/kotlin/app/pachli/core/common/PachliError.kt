@@ -1,0 +1,137 @@
+/*
+ * Copyright 2024 Pachli Association
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.core.common
+
+import android.content.Context
+import androidx.annotation.StringRes
+import app.pachli.core.common.string.unicodeWrap
+
+/**
+ * Interface for errors throughout the app.
+ *
+ * Derive new error class hierarchies for different components using a sealed
+ * class hierarchy like so:
+ *
+ * ```kotlin
+ * sealed class Error(
+ *     @StringRes override val resourceId: Int,
+ *     override val formatArgs: Array<out String>?,
+ *     cause: PachliError? = null,
+ * ) : PachliError {
+ *     data object SomeProblem : Error(R.string.error_some_problem)
+ *     data class OutOfRange(val input: Int) : Error(
+ *         R.string.error_out_of_range, // "Value %1$d is out of range"
+ *         input,
+ *     )
+ *     data class Fetch(val url: String, val cause: PachliError) : Error(
+ *         R.string.error_fetch, // "Could not fetch %1$s: %2$s"
+ *         url,
+ *         cause = cause,
+ *     )
+ * }
+ * ```
+ *
+ * In this example `SomeProblem` represents an error with no additional context.
+ *
+ * `OutOfRange` is an error relating to a single value with no underlying cause.
+ * The value (`input`) will be inserted in the string at `%1$s`.
+ *
+ * `Fetch` is an error relating to a URL with an underlying cause. The URL will be
+ * included in the error message at `%1$s`, and the string representation of the
+ * cause will be included at `%2$s`.
+ *
+ * Possible string resources for those errors would be:
+ *
+ * ```xml
+ * <string name="error_some_problem">Operation failed</string>
+ * <string name="error_out_of_range">Value %1$d is out of range</string>
+ * <string name="error_fetch">Could not fetch %1$s: %2$s</string>
+ * ```
+ *
+ * @property resourceId A string resource for the error message associated with
+ * this error.
+ * @property formatArgs Additional arguments to be interpolated in to the string
+ * resource when constructing the error message.
+ * @property cause The cause of this error, if any.
+ */
+interface PachliError {
+    /** String resource ID for the error message. */
+    @get:StringRes
+    val resourceId: Int
+
+    /** Arguments to be interpolated in to the string from [resourceId]. */
+    val formatArgs: Array<out Any>?
+
+    /**
+     * The cause of this error. If present the string representation of `cause`
+     * will be set as the last format argument when formatting [resourceId].
+     */
+    val cause: PachliError?
+
+    /**
+     * Generate a formatted error message for this error. [resourceId] is
+     * fetched and the values of [formatArgs] are interpolated in to it.
+     * If [cause] is non-null then its error message is generated (recursively)
+     * and used as the last format argument.
+     */
+    fun fmt(context: Context): String {
+        val args = buildList {
+            formatArgs?.let { addAll(it) }
+            cause?.let { add(it.fmt(context)) }
+        }
+        return context.getString(resourceId, *args.toTypedArray()).unicodeWrap()
+    }
+
+    /**
+     * @param context Context used to resolve the formatting strings.
+     *
+     * @return [PachliError] as a [PachliThrowable].
+     */
+    fun asThrowable(context: Context): PachliThrowable {
+        return PachliThrowable(
+            // The message has to be resolved now because the Throwable might be
+            // used in places where .fmt() can't be called. For example, logging
+            // the Throwable.
+            message = fmt(context),
+            cause = cause?.asThrowable(context),
+            pachliError = this,
+        )
+    }
+}
+
+/**
+ * Container for a [PachliError] to smuggle as a [Throwable].
+ *
+ * Some APIs -- for example, `MediatorResult.Error` -- require that an error is
+ * represented as a `Throwable`. As an `interface`, `PachliError` can't inherit
+ * from `Throwable`, so this class inverts the relationship, and embeds the
+ * `PachliError` in a `Throwable`.
+ *
+ * Construct using [PachliError.asThrowable].
+ *
+ * This should only be used if there is no other mechanism for reporting the
+ * error up the call stack.
+ *
+ * @property message
+ * @property cause
+ */
+class PachliThrowable internal constructor(
+    override val message: String,
+    override val cause: PachliThrowable? = null,
+    val pachliError: PachliError,
+) : Throwable(message = message, cause = cause), PachliError by pachliError

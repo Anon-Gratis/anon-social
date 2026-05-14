@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_category_downloads">ဒေါင်းလုဒ်များ</string>
+    <string name="pref_title_downloads">တည်နေရာကို ‌ဒေါင်းလုပ်ဒ်လုပ်မည်</string>
+    <string name="app_theme_light">အလင္း</string>
+    <string name="app_theme_dark">အေမွာင္</string>
+    <string name="pref_category_tabs">တဘ်များ</string>
+    <string name="pref_main_nav_position_option_top">အပေါ်ဘက်</string>
+    <string name="pref_show_self_username_always">အမြဲတမ်း</string>
+    <string name="pref_show_self_username_never">Never</string>
+    <string name="pref_update_notification_frequency_never">Never</string>
+    <string name="pref_update_notification_frequency_always">အမြဲတမ်း</string>
+    <string name="pref_default_audio_playback_option_unmuted">မကန့်သတ်တော့</string>
+    <string name="app_theme_black">နောက်သို့</string>
+    <string name="pref_default_audio_playback_option_muted">ကန့်သတ်မည်</string>
+    <string name="pref_summary_quote_policy_disabled">သင့်ဆာဗာသည် အကြောင်းအရာစစ်ထုတ်မှုကိုမထောက်ပံ့ပါ</string>
+    <string name="pref_main_nav_position_option_bottom">အောက်ခြေ</string>
+    <string name="pref_underline_links_hashtags">Hashtag များ</string>
+</resources>

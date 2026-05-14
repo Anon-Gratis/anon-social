@@ -1,0 +1,13 @@
+Pachli 2.8.2
+
+Nowości
+
+- Pozwól na wybór zachowania przy dotknięciu karty
+- Dodanie możliwości poboru mediów do folderów wg wysyłających
+- Dodanie opcji zapisu załączników do folderów wg kont
+
+Poprawki:
+
+- Pokazywanie błędów pobierania powiadomień zamiast JSON
+- Zapisanie miejsce czytania gdy żaden wpis nie jest w pełni widoczny
+- Aktualizacja tłumaczeń na galicyjski i irlandzki

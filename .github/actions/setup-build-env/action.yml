@@ -1,0 +1,22 @@
+name: "Setup build environment"
+description: "Checks out code, sets up Java and Gradle with appropriate configuration"
+inputs:
+  gradle-cache-encryption-key:
+    required: true
+    description: "Key used to encrypt Gradle build cache"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Copy CI gradle.properties
+      shell: bash
+      run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5
+      with:
+        cache-encryption-key: ${{ inputs.gradle_cache_encryption_key }}

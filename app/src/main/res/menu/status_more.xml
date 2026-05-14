@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/status_share"
+        android:title="@string/action_share">
+        <menu>
+            <item
+                android:id="@+id/post_share_link"
+                android:title="@string/post_share_link" />
+            <item
+                android:id="@+id/post_share_content"
+                android:title="@string/post_share_content" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/status_copy_link"
+        android:title="@string/action_copy_link" />
+    <item
+        android:id="@+id/status_open_as"
+        android:title="@string/action_open_as" />
+
+    <item
+        android:id="@+id/status_open_quoted_post"
+        android:title="@string/action_open_quoted_post" />
+
+    <item
+        android:id="@+id/status_download_media"
+        android:title="@string/download_media" />
+    <item
+        android:id="@+id/status_mute_conversation"
+        android:title="@string/action_mute_conversation" />
+    <item
+        android:id="@+id/status_unmute_conversation"
+        android:title="@string/action_unmute_conversation" />
+    <!-- Default is to not show this menu.
+         See ConversationsFragment.onPrepareMoreMenu -->
+    <item
+        android:id="@+id/conversation_delete"
+        android:title="@string/action_delete_conversation"
+        android:visible="false" />
+    <item
+        android:id="@+id/status_mute"
+        android:title="@string/action_mute" />
+    <item
+        android:id="@+id/status_block"
+        android:title="@string/action_block" />
+    <item
+        android:id="@+id/status_report"
+        android:title="@string/action_report" />
+    <item
+        android:id="@+id/status_translate"
+        android:title="@string/action_translate" />
+    <item
+        android:id="@+id/status_translate_undo"
+        android:title="@string/action_translate_undo" />
+</menu>

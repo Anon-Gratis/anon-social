@@ -1,0 +1,14 @@
+Pachli 2.8.2
+
+Nové funkcie:
+
+- Možnosť prispôsobiť si akciu po klepnutí na záložku/kartu
+- Možnosť sťahovať médiá do priečinkov pre každého odosielateľa zvlášť 
+- Možnosť ukladať prílohy do priečinkov pre každý účet zvlášť 
+
+Opravy:
+
+- Zobraziť chybové hlásenia namiesto JSON údajov
+- Uložiť pozíciu čítania, ak príspevok nie je celý zobrazený
+- Aktualizácia prekladu galícijčiny
+- Aktualizácia prekladu írčiny

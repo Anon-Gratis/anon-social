@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Ljust</string>
+    <string name="app_theme_black">Svart</string>
+    <string name="app_theme_auto">Automatiskt vid solnedgång</string>
+    <string name="app_theme_dark">Mörkt</string>
+    <string name="app_theme_system">Använd system-tema</string>
+    <string name="pref_category_downloads">Nedladdningar</string>
+    <string name="pref_title_downloads">Nedladdningsplats</string>
+    <string name="download_location_downloads">Ladda ner mappen</string>
+    <string name="download_location_per_account">Per-konto mappar, i Downloads mapp</string>
+    <string name="download_location_per_sender">Per-sender mappar, i Downloads mapp</string>
+    <string name="pref_title_tab_tap">Åtgärd när man trycker på en flik</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Hoppa till nästa sida</string>
+    <string name="tab_tap_behaviour_jump_to_newest">Hoppa till nytt innehåll</string>
+    <string name="pref_category_tabs">Flikar</string>
+    <string name="pref_main_nav_position_option_top">Topp</string>
+    <string name="pref_main_nav_position_option_bottom">Botten</string>
+    <string name="pref_show_self_username_always">Alltid</string>
+    <string name="pref_show_self_username_disambiguate">När flera konton är inloggade</string>
+    <string name="pref_show_self_username_never">Aldrig</string>
+    <string name="pref_title_tab_alignment">Align main navigation flikar</string>
+    <string name="pref_tab_alignment_start">Start av text riktning</string>
+    <string name="pref_tab_alignment_justify_if_possible">Expandera till full bredd</string>
+    <string name="pref_title_tab_contents">Innehåll av huvudnavigationsflikar</string>
+    <string name="pref_tab_contents_icon_text_inline">Ikon med text bredvid</string>
+    <string name="pref_tab_contents_icon_text_below">Ikon med text nedan</string>
+    <string name="pref_tab_alignment_end">Slut på text riktning</string>
+    <string name="pref_tab_contents_icon_only">Endast ikon</string>
+    <string name="pref_tab_contents_text_only">Endast text</string>
+    <string name="pref_title_render_markdown">Gör Markdown</string>
+    <string name="pref_update_notification_frequency_never">Aldrig</string>
+    <string name="pref_update_notification_frequency_once_per_version">En gång per version</string>
+    <string name="pref_update_notification_frequency_always">Alltid</string>
+    <string name="pref_title_export_settings">Avancerade inställningar</string>
+    <string name="pref_title_import_settings">Importera inställningar</string>
+    <string name="pref_default_audio_playback_option_unmuted">Ej tystad.</string>
+    <string name="pref_default_audio_playback_option_muted">Tystad</string>
+    <string name="pref_title_translation">Översättning</string>
+    <string name="pref_pronoun_display_everywhere">Överallt</string>
+    <string name="pref_quote_policy_followers">en av dina följare</string>
+    <string name="pref_translation_backend_option_server_only">Server uppe</string>
+    <string name="pref_summary_quote_policy_disabled">Din server stöder inte filter</string>
+    <string name="pref_underline_links_links">Externa länkar</string>
+    <string name="pref_underline_links_hashtags">Hashtaggar</string>
+</resources>

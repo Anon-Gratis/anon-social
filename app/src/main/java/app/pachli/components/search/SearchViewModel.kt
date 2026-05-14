@@ -1,0 +1,460 @@
+/* Copyright 2021 Tusky Contributors
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.components.search
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import app.pachli.components.compose.ComposeAutoCompleteAdapter
+import app.pachli.components.search.SearchOperator.DateOperator
+import app.pachli.components.search.SearchOperator.FromOperator
+import app.pachli.components.search.SearchOperator.HasEmbedOperator
+import app.pachli.components.search.SearchOperator.HasLinkOperator
+import app.pachli.components.search.SearchOperator.HasMediaOperator
+import app.pachli.components.search.SearchOperator.HasPollOperator
+import app.pachli.components.search.SearchOperator.HasQuoteOperator
+import app.pachli.components.search.SearchOperator.IsReplyOperator
+import app.pachli.components.search.SearchOperator.IsSensitiveOperator
+import app.pachli.components.search.SearchOperator.LanguageOperator
+import app.pachli.components.search.SearchOperator.WhereOperator
+import app.pachli.components.search.adapter.SearchPagingSourceFactory
+import app.pachli.core.data.model.ContentFilterModel
+import app.pachli.core.data.model.IStatusViewData
+import app.pachli.core.data.model.StatusDisplayOptions
+import app.pachli.core.data.model.StatusItemViewData
+import app.pachli.core.data.repository.AccountManager
+import app.pachli.core.data.repository.Loadable
+import app.pachli.core.data.repository.OfflineFirstStatusRepository
+import app.pachli.core.data.repository.ServerRepository
+import app.pachli.core.data.repository.StatusDisplayOptionsRepository
+import app.pachli.core.database.dao.TimelineStatusWithAccount
+import app.pachli.core.database.model.AccountEntity
+import app.pachli.core.database.model.TimelineStatusWithQuote
+import app.pachli.core.database.model.asEntity
+import app.pachli.core.model.AttachmentDisplayAction
+import app.pachli.core.model.ContentFilterVersion
+import app.pachli.core.model.DeletedStatus
+import app.pachli.core.model.FilterAction
+import app.pachli.core.model.FilterContext
+import app.pachli.core.model.Poll
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_BY_DATE
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_FROM
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_AUDIO
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_EMBED
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_IMAGE
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_LINK
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_MEDIA
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_POLL
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_QUOTE
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_HAS_VIDEO
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_IN_LIBRARY
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_IN_PUBLIC
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_IS_REPLY
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_IS_SENSITIVE
+import app.pachli.core.model.ServerOperation.ORG_JOINMASTODON_SEARCH_QUERY_LANGUAGE
+import app.pachli.core.model.Status
+import app.pachli.core.network.retrofit.MastodonApi
+import app.pachli.core.network.retrofit.apiresult.ApiError
+import app.pachli.usecase.TimelineCases
+import app.pachli.util.getInitialLanguages
+import app.pachli.util.getLocaleList
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.map
+import com.github.michaelbull.result.mapBoth
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.z4kn4fein.semver.constraints.toConstraint
+import javax.inject.Inject
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
+
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val mastodonApi: MastodonApi,
+    private val timelineCases: TimelineCases,
+    private val accountManager: AccountManager,
+    private val statusRepository: OfflineFirstStatusRepository,
+    statusDisplayOptionsRepository: StatusDisplayOptionsRepository,
+    serverRepository: ServerRepository,
+) : ViewModel() {
+
+    var currentQuery: String = ""
+    var currentSearchFieldContent: String? = null
+
+    val activeAccount: AccountEntity?
+        get() = accountManager.activeAccount
+
+    private val alwaysOpenSpoiler = activeAccount?.alwaysOpenSpoiler ?: false
+
+    val statusDisplayOptions: StatusDisplayOptions = statusDisplayOptionsRepository.flow.value
+
+    private val _operatorViewData = MutableStateFlow(
+        setOf(
+            SearchOperatorViewData.from(HasMediaOperator()),
+            SearchOperatorViewData.from(DateOperator()),
+            SearchOperatorViewData.from(HasEmbedOperator()),
+            SearchOperatorViewData.from(FromOperator()),
+            SearchOperatorViewData.from(LanguageOperator()),
+            SearchOperatorViewData.from(HasLinkOperator()),
+            SearchOperatorViewData.from(HasPollOperator()),
+            SearchOperatorViewData.from(HasQuoteOperator()),
+            SearchOperatorViewData.from(IsReplyOperator()),
+            SearchOperatorViewData.from(IsSensitiveOperator()),
+            SearchOperatorViewData.from(WhereOperator()),
+        ),
+    )
+
+    /**
+     * Complete set of [SearchOperatorViewData].
+     *
+     * Items are never added or removed from this, only replaced with [replaceOperator].
+     * An item can be retrieved by class using [getOperator]
+     *
+     * @see [replaceOperator]
+     * @see [getOperator]
+     */
+    val operatorViewData = _operatorViewData.asStateFlow()
+
+    val locales = accountManager.activeAccountFlow
+        .filterIsInstance<Loadable.Loaded<AccountEntity?>>()
+        .map { getLocaleList(getInitialLanguages(activeAccount = it.data)) }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            getLocaleList(getInitialLanguages()),
+        )
+
+    val server = serverRepository.flow.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null,
+    )
+
+    /**
+     * Set of operators the server supports.
+     *
+     * Empty set if the server does not support any operators.
+     */
+    val availableOperators = serverRepository.flow.map { result ->
+        result.mapBoth(
+            { server ->
+                buildSet {
+                    val constraint100 = ">=1.0.0".toConstraint()
+                    val canHasMedia = server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_MEDIA, constraint100)
+                    val canHasImage = server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_IMAGE, constraint100)
+                    val canHasVideo = server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_VIDEO, constraint100)
+                    val canHasAudio = server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_AUDIO, constraint100)
+                    if (canHasMedia || canHasImage || canHasVideo || canHasAudio) {
+                        add(HasMediaOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_BY_DATE, constraint100)) {
+                        add(DateOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_FROM, constraint100)) {
+                        add(FromOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_LANGUAGE, constraint100)) {
+                        add(LanguageOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_LINK, constraint100)) {
+                        add(HasLinkOperator())
+                    }
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_EMBED, constraint100)) {
+                        add(HasEmbedOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_POLL, constraint100)) {
+                        add(HasPollOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_HAS_QUOTE, constraint100)) {
+                        add(HasQuoteOperator())
+                    }
+
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_IS_REPLY, constraint100)) {
+                        add(IsReplyOperator())
+                    }
+                    if (server.can(ORG_JOINMASTODON_SEARCH_QUERY_IS_SENSITIVE, constraint100)) {
+                        add(IsSensitiveOperator())
+                    }
+
+                    val canInLibrary = server.can(ORG_JOINMASTODON_SEARCH_QUERY_IN_LIBRARY, constraint100)
+                    val canInPublic = server.can(ORG_JOINMASTODON_SEARCH_QUERY_IN_PUBLIC, constraint100)
+                    if (canInLibrary || canInPublic) add(WhereOperator())
+                }
+            },
+            {
+                emptySet()
+            },
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptySet(),
+    )
+
+    private val loadedStatuses: MutableList<StatusItemViewData> = mutableListOf()
+
+    private val statusesPagingSourceFactory = SearchPagingSourceFactory(mastodonApi, SearchType.Status, loadedStatuses) {
+        val pachliAccount = accountManager.activePachliAccountFlow.first()
+
+        // Search uses the "PUBLIC" context, since https://github.com/mastodon/mastodon/pull/36346/
+        val contentFilterModel = when (pachliAccount.contentFilters.version) {
+            ContentFilterVersion.V2 -> ContentFilterModel(FilterContext.PUBLIC)
+            ContentFilterVersion.V1 -> ContentFilterModel(FilterContext.PUBLIC, pachliAccount.contentFilters.contentFilters)
+        }
+
+        it.statuses
+            .map { status ->
+                TimelineStatusWithQuote(
+                    timelineStatus = TimelineStatusWithAccount(
+                        status = status.asEntity(pachliAccount.id),
+                        account = status.reblog?.account?.asEntity(pachliAccount.id) ?: status.account.asEntity(pachliAccount.id),
+                        reblogAccount = status.reblog?.let { status.account.asEntity(pachliAccount.id) },
+                        viewData = statusRepository.getStatusViewData(pachliAccount.id, status.actionableId),
+                        translatedStatus = statusRepository.getTranslation(pachliAccount.id, status.actionableId),
+                    ),
+                    quotedStatus = (status.actionableStatus.quote as? Status.Quote.FullQuote)?.status?.let { q ->
+                        TimelineStatusWithAccount(
+                            status = q.asEntity(pachliAccount.id),
+                            account = q.account.asEntity(pachliAccount.id),
+                            reblogAccount = null,
+                            viewData = statusRepository.getStatusViewData(pachliAccount.id, q.actionableId),
+                            translatedStatus = statusRepository.getTranslation(pachliAccount.id, q.actionableId),
+                        )
+                    },
+                )
+            }
+            .map { it to contentFilterModel.filterActionFor(it.timelineStatus.status) }
+            .filter { it.second != FilterAction.HIDE }
+            .map { (status, contentFilterAction) ->
+                StatusItemViewData.from(
+                    pachliAccount = pachliAccount,
+                    status,
+                    isExpanded = alwaysOpenSpoiler,
+                    contentFilterAction = contentFilterAction,
+                    quoteContentFilterAction = status.quotedStatus?.let { contentFilterModel.filterActionFor(it.status) },
+                    filterContext = null,
+                    showSensitiveMedia = pachliAccount.entity.alwaysShowSensitiveMedia,
+                )
+            }.apply {
+                loadedStatuses.addAll(this)
+            }
+    }
+    private val accountsPagingSourceFactory = SearchPagingSourceFactory(mastodonApi, SearchType.Account) {
+        it.accounts
+    }
+    private val hashtagsPagingSourceFactory = SearchPagingSourceFactory(mastodonApi, SearchType.Hashtag) {
+        it.hashtags
+    }
+
+    val statusesFlow = Pager(
+        config = PagingConfig(pageSize = DEFAULT_LOAD_SIZE, initialLoadSize = DEFAULT_LOAD_SIZE),
+        pagingSourceFactory = statusesPagingSourceFactory,
+    ).flow.cachedIn(viewModelScope)
+
+    val accountsFlow = Pager(
+        config = PagingConfig(pageSize = DEFAULT_LOAD_SIZE, initialLoadSize = DEFAULT_LOAD_SIZE),
+        pagingSourceFactory = accountsPagingSourceFactory,
+    ).flow.cachedIn(viewModelScope)
+
+    val hashtagsFlow = Pager(
+        config = PagingConfig(pageSize = DEFAULT_LOAD_SIZE, initialLoadSize = DEFAULT_LOAD_SIZE),
+        pagingSourceFactory = hashtagsPagingSourceFactory,
+    ).flow.cachedIn(viewModelScope)
+
+    /** @return The operator of type T. */
+    inline fun <reified T : SearchOperator> getOperator() = operatorViewData.value.find { it.operator is T }?.operator as T?
+
+    /**
+     * Replaces the existing [SearchOperatorViewData] in [_operatorViewData]
+     * with [viewData].
+     */
+    fun <T : SearchOperator> replaceOperator(viewData: SearchOperatorViewData<T>) = _operatorViewData.update { operators ->
+        operators.find { it.javaClass == viewData.javaClass }?.let { operators - it + viewData } ?: operators
+    }
+
+    fun search() {
+        val operatorQuery = _operatorViewData.value.mapNotNull { it.operator.query() }.joinToString(" ")
+        currentQuery = if (operatorQuery.isNotBlank()) arrayOf(currentSearchFieldContent, operatorQuery).joinToString(" ") else currentSearchFieldContent ?: ""
+
+        loadedStatuses.clear()
+        statusesPagingSourceFactory.newSearch(currentQuery)
+        accountsPagingSourceFactory.newSearch(currentQuery)
+        hashtagsPagingSourceFactory.newSearch(currentQuery)
+    }
+
+    fun removeItem(statusViewData: IStatusViewData) {
+        viewModelScope.launch {
+            timelineCases.delete(statusViewData.statusId)
+                .onSuccess {
+                    if (loadedStatuses.remove(statusViewData)) {
+                        statusesPagingSourceFactory.invalidate()
+                    }
+                }
+        }
+    }
+
+    fun expandedChange(statusViewData: IStatusViewData, expanded: Boolean) {
+        updateStatusViewData(statusViewData) {
+            it.copy(statusViewData = it.statusViewData.copy(isExpanded = expanded))
+        }
+    }
+
+    fun reblog(statusViewData: IStatusViewData, reblog: Boolean) {
+        viewModelScope.launch {
+            updateStatus(
+                statusViewData.status.copy(
+                    reblogged = reblog,
+                    reblog = statusViewData.status.reblog?.copy(reblogged = reblog),
+                ),
+            )
+            statusRepository.reblog(statusViewData.pachliAccountId, statusViewData.statusId, reblog)
+                .onFailure {
+                    updateStatus(statusViewData.status)
+                    Timber.d("Failed to reblog status %s: %s", statusViewData.statusId, it)
+                }
+        }
+    }
+
+    fun collapsedChange(statusViewData: IStatusViewData, collapsed: Boolean) {
+        updateStatusViewData(statusViewData) {
+            it.copy(statusViewData = it.statusViewData.copy(isCollapsed = collapsed))
+        }
+    }
+
+    fun voteInPoll(statusViewData: IStatusViewData, poll: Poll, choices: List<Int>) {
+        val votedPoll = poll.votedCopy(choices)
+        updateStatus(statusViewData.status.copy(poll = votedPoll))
+        viewModelScope.launch {
+            statusRepository.voteInPoll(statusViewData.pachliAccountId, statusViewData.statusId, votedPoll.id, choices)
+                .onFailure {
+                    updateStatus(statusViewData.status)
+                    Timber.d("Failed to vote in poll: %s: %s", statusViewData.statusId, it)
+                }
+        }
+    }
+
+    fun attachmentDisplayActionChange(statusViewData: IStatusViewData, attachmentDisplayAction: AttachmentDisplayAction) {
+        updateStatusViewData(statusViewData) {
+            it.copy(statusViewData = it.statusViewData.copy(attachmentDisplayAction = attachmentDisplayAction))
+        }
+        viewModelScope.launch {
+            statusRepository.setAttachmentDisplayAction(statusViewData.pachliAccountId, statusViewData.statusId, attachmentDisplayAction)
+        }
+    }
+
+    fun favorite(statusViewData: IStatusViewData, isFavorited: Boolean) {
+        updateStatus(statusViewData.status.copy(favourited = isFavorited))
+        viewModelScope.launch {
+            statusRepository.favourite(statusViewData.pachliAccountId, statusViewData.statusId, isFavorited)
+                .onFailure { updateStatus(statusViewData.status) }
+        }
+    }
+
+    fun bookmark(statusViewData: IStatusViewData, isBookmarked: Boolean) {
+        updateStatus(statusViewData.status.copy(bookmarked = isBookmarked))
+        viewModelScope.launch {
+            statusRepository.bookmark(statusViewData.pachliAccountId, statusViewData.statusId, isBookmarked)
+                .onFailure { updateStatus(statusViewData.status) }
+        }
+    }
+
+    fun muteAccount(accountId: String, notifications: Boolean, duration: Int?) {
+        viewModelScope.launch {
+            timelineCases.muteAccount(activeAccount!!.id, accountId, notifications, duration)
+        }
+    }
+
+    fun pinStatus(statusViewData: IStatusViewData, isPin: Boolean) {
+        viewModelScope.launch {
+            statusRepository.pin(statusViewData.pachliAccountId, statusViewData.statusId, isPin)
+        }
+    }
+
+    fun blockAccount(accountId: String) {
+        viewModelScope.launch {
+            timelineCases.blockAccount(activeAccount!!.id, accountId)
+        }
+    }
+
+    fun deleteStatusAsync(id: String): Deferred<Result<DeletedStatus, ApiError>> {
+        return viewModelScope.async {
+            timelineCases.delete(id).map { it.body.asModel() }
+        }
+    }
+
+    fun muteConversation(statusViewData: IStatusViewData, mute: Boolean) {
+        updateStatus(statusViewData.status.copy(muted = mute))
+        viewModelScope.launch {
+            timelineCases.muteConversation(activeAccount!!.id, statusViewData.statusId, mute)
+        }
+    }
+
+    /** Searches for autocomplete suggestions. */
+    suspend fun searchAccountAutocompleteSuggestions(token: String): List<ComposeAutoCompleteAdapter.AutocompleteResult> {
+        // "resolve" is false as, by definition, the server will only return statuses it
+        // knows about, therefore the accounts that posted those statuses will definitely
+        // be known by the server and there is no need to resolve them further.
+        return mastodonApi.search(query = token, resolve = false, type = SearchType.Account.apiParameter, limit = 10)
+            .mapBoth(
+                { it.body.accounts.map { ComposeAutoCompleteAdapter.AutocompleteResult.AccountResult(it.asModel()) } },
+                {
+                    Timber.e("Autocomplete search for %s failed: %s", token, it)
+                    emptyList()
+                },
+            )
+    }
+
+    private fun updateStatusViewData(oldStatusViewData: IStatusViewData, updater: (StatusItemViewData) -> StatusItemViewData) {
+        val idx = loadedStatuses.indexOfFirst { it.statusId == oldStatusViewData.statusId }
+        if (idx >= 0) {
+            loadedStatuses[idx] = updater(loadedStatuses[idx])
+            statusesPagingSourceFactory.invalidate()
+        }
+    }
+
+    private fun updateStatus(newStatus: Status) {
+        val statusViewData = loadedStatuses.find { it.statusId == newStatus.statusId }
+        if (statusViewData != null) {
+            updateStatusViewData(statusViewData) {
+                it.copy(statusViewData = it.statusViewData.copy(status = newStatus))
+            }
+        }
+    }
+
+    companion object {
+        private const val DEFAULT_LOAD_SIZE = 20
+    }
+}

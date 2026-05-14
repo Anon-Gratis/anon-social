@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">白天</string>
+    <string name="app_theme_black">暗色</string>
+    <string name="app_theme_auto">自動切換</string>
+    <string name="app_theme_dark">黑夜</string>
+    <string name="app_theme_system">跟隨系統</string>
+    <string name="pref_category_downloads">下載</string>
+    <string name="pref_title_downloads">下载地点</string>
+    <string name="download_location_downloads">下载夹</string>
+    <string name="download_location_per_account">缩略语</string>
+    <string name="download_location_per_sender">Per-sender 夹,下载夹</string>
+    <string name="pref_title_tab_tap">A. 伪造表格时的行动</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Jump to next page</string>
+    <string name="tab_tap_behaviour_jump_to_newest">缩略语</string>
+    <string name="pref_category_tabs">標籤頁</string>
+    <string name="pref_main_nav_position_option_top">頂端</string>
+    <string name="pref_main_nav_position_option_bottom">底端</string>
+    <string name="pref_show_self_username_always">經常</string>
+    <string name="pref_show_self_username_never">永不</string>
+    <string name="pref_show_self_username_disambiguate">当多个账户出现滞后时</string>
+    <string name="pref_title_tab_alignment">主权主航标</string>
+    <string name="pref_tab_alignment_start">案文方向的开始</string>
+    <string name="pref_tab_alignment_justify_if_possible">1. 扩大至全额保险</string>
+    <string name="pref_tab_alignment_end">案文方向的结束</string>
+    <string name="pref_tab_contents_text_only">案文</string>
+    <string name="pref_tab_contents_icon_text_inline">背 景</string>
+    <string name="pref_tab_contents_icon_text_below">内容提要</string>
+    <string name="pref_title_tab_contents">主要导航表的内容</string>
+    <string name="pref_tab_contents_icon_only">Icon</string>
+    <string name="pref_title_render_markdown">性别标记</string>
+    <string name="pref_update_notification_frequency_never">绝不</string>
+    <string name="pref_update_notification_frequency_always">总是</string>
+    <string name="pref_default_audio_playback_option_unmuted">重開麥克風。</string>
+    <string name="pref_default_audio_playback_option_muted">已關閉麥克風。</string>
+    <string name="pref_title_translation">翻译</string>
+    <string name="pref_pronoun_display_everywhere">到处</string>
+    <string name="pref_underline_links_hashtags">話題</string>
+</resources>

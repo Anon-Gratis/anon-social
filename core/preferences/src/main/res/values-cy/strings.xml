@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Golau</string>
+    <string name="app_theme_black">Du</string>
+    <string name="app_theme_auto">Awtomatig wrth iddi nosi</string>
+    <string name="app_theme_dark">Tywyll</string>
+    <string name="app_theme_system">Defnyddio arddull y system</string>
+    <string name="pref_category_downloads">Llwytho i Lawr</string>
+    <string name="pref_category_tabs">Tabiau</string>
+    <string name="pref_main_nav_position_option_top">Brig</string>
+    <string name="pref_main_nav_position_option_bottom">Gwaelod</string>
+    <string name="pref_show_self_username_always">Bob tro</string>
+    <string name="pref_show_self_username_disambiguate">Pan fydd cyfrifon lluosog wedi\'u mewngofnodi</string>
+    <string name="pref_show_self_username_never">Byth</string>
+    <string name="pref_tab_contents_icon_only">Eicon yn unig</string>
+    <string name="pref_update_notification_frequency_never">Byth</string>
+    <string name="pref_update_notification_frequency_always">Bob tro</string>
+    <string name="pref_default_audio_playback_option_unmuted">Dad-dewi</string>
+    <string name="pref_title_translation">Cyfieithiad</string>
+    <string name="pref_title_downloads">Detholiad Llwytho i Lawr</string>
+    <string name="pref_default_audio_playback_option_muted">Tewi</string>
+    <string name="pref_underline_links_hashtags">Hashnodau</string>
+</resources>

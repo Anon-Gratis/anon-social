@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_category_downloads">הורדות</string>
+    <string name="pref_title_downloads">מיקום ההורדה</string>
+    <string name="app_theme_light">בהירה</string>
+    <string name="app_theme_black">שחורה</string>
+    <string name="app_theme_dark">כהה</string>
+    <string name="download_location_downloads">הורד תיקיה</string>
+    <string name="download_location_per_account">תיקיות Per-account, בהורדת התיקיה</string>
+    <string name="app_theme_auto">אוטומטי בשקיעה</string>
+    <string name="app_theme_system">שימוש בעיצוב מערכת</string>
+    <string name="download_location_per_sender">תיקיות Per-sender, בהורדת התיקיה</string>
+    <string name="pref_title_tab_tap">פעולה בעת שימוש בכרטיסיה</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">לקפוץ לדף הבא</string>
+    <string name="tab_tap_behaviour_jump_to_newest">Jump to new content</string>
+    <string name="pref_category_tabs">טאבים</string>
+    <string name="pref_main_nav_position_option_top">למעלה</string>
+    <string name="pref_main_nav_position_option_bottom">למטה</string>
+    <string name="pref_show_self_username_always">תמיד</string>
+    <string name="pref_show_self_username_never">אף פעם</string>
+    <string name="pref_show_self_username_disambiguate">כאשר מספר חשבונות מחוברים</string>
+    <string name="pref_tab_alignment_start">תחילת כיוון הטקסט</string>
+    <string name="pref_tab_alignment_justify_if_possible">הרחבה לרוחב מלא</string>
+    <string name="pref_tab_alignment_end">סוף כיוון הטקסט</string>
+    <string name="pref_title_tab_contents">תוכן כרטיסיות ניווט עיקריות</string>
+    <string name="pref_title_tab_alignment">כרטיסי ניווט עיקריים</string>
+    <string name="pref_tab_contents_icon_only">סמל רק</string>
+    <string name="pref_tab_contents_text_only">טקסט רק</string>
+    <string name="pref_tab_contents_icon_text_inline">סמל עם טקסט לציד</string>
+    <string name="pref_tab_contents_icon_text_below">סמל עם טקסט למטה</string>
+    <string name="pref_title_render_markdown">פענוח טקסט Markdown</string>
+    <string name="pref_update_notification_frequency_never">לְעוֹלָם לֹא</string>
+    <string name="pref_update_notification_frequency_always">תָמִיד</string>
+    <string name="pref_title_export_settings">הגדרות מומחים</string>
+    <string name="pref_title_import_settings">ייבוא הגדרות יישום</string>
+    <string name="pref_default_audio_playback_option_unmuted">השתקה בוטלה.</string>
+    <string name="pref_default_audio_playback_option_muted">מושתק</string>
+    <string name="pref_title_translation">תִרגוּם</string>
+    <string name="pref_pronoun_display_everywhere">בְּכָל מָקוֹם</string>
+    <string name="pref_underline_links_hashtags">האשטגים</string>
+</resources>

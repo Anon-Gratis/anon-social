@@ -1,0 +1,14 @@
+Pachli 2.8.2
+
+Nuevo:
+
+- Se puede elegir el comportamiento al tocar una pestaña
+- Añadir opción para descargar medios en subcarpeta de cuenta que publica
+- Añadir opción para guardar archivos adjuntos en carpetas por cuenta que publica
+
+Arreglos:
+
+- Mostrar errores de notificación en lugar de JSON
+- Guardar la posición de lectura si ninguna publicación es completamente visible
+- Actualizar traducciones al gallego
+- Actualizar traducciones al irlandés

@@ -1,0 +1,127 @@
+/*
+ * Copyright 2023 Pachli Association
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.components.notifications
+
+import androidx.core.text.HtmlCompat
+import androidx.core.text.htmlEncode
+import androidx.recyclerview.widget.RecyclerView
+import app.pachli.R
+import app.pachli.core.common.extensions.visible
+import app.pachli.core.common.string.unicodeWrap
+import app.pachli.core.data.model.NotificationViewData
+import app.pachli.core.data.model.StatusDisplayOptions
+import app.pachli.core.designsystem.R as DR
+import app.pachli.core.model.TimelineAccount
+import app.pachli.core.network.parseAsMastodonHtml
+import app.pachli.core.preferences.LinksToUnderline
+import app.pachli.core.preferences.PronounDisplay
+import app.pachli.core.ui.LinkListener
+import app.pachli.core.ui.SetContent
+import app.pachli.core.ui.emojify
+import app.pachli.core.ui.extensions.handleContentDescription
+import app.pachli.core.ui.loadAvatar
+import app.pachli.databinding.ItemFollowBinding
+import com.bumptech.glide.RequestManager
+
+class FollowViewHolder(
+    private val binding: ItemFollowBinding,
+    private val glide: RequestManager,
+    private val setContent: SetContent,
+    private val linkListener: LinkListener,
+) : NotificationsPagingAdapter.ViewHolder<NotificationViewData>, RecyclerView.ViewHolder(binding.root) {
+    private val avatarRadius42dp = itemView.context.resources.getDimensionPixelSize(
+        DR.dimen.avatar_radius_42dp,
+    )
+
+    override fun bind(
+        viewData: NotificationViewData,
+        payloads: List<List<Any?>>?,
+        statusDisplayOptions: StatusDisplayOptions,
+    ) {
+        // Skip updates with payloads. That indicates a timestamp update, and
+        // this view does not have timestamps.
+        if (!payloads.isNullOrEmpty()) return
+
+        setMessage(
+            viewData.account,
+            viewData is NotificationViewData.SignupNotificationViewData,
+            statusDisplayOptions.animateAvatars,
+            statusDisplayOptions.animateEmojis,
+            statusDisplayOptions.pronounDisplay == PronounDisplay.EVERYWHERE,
+            statusDisplayOptions.linksToUnderline,
+        )
+    }
+
+    private fun setMessage(
+        account: TimelineAccount,
+        isSignUp: Boolean,
+        animateAvatars: Boolean,
+        animateEmojis: Boolean,
+        showPronouns: Boolean,
+        linksToUnderline: Set<LinksToUnderline>,
+    ) {
+        val context = binding.notificationText.context
+        val displayName = account.name.htmlEncode().unicodeWrap()
+        val msg = context.getString(
+            if (isSignUp) {
+                R.string.notification_sign_up_format
+            } else {
+                R.string.notification_follow_format
+            },
+            displayName,
+        )
+        val wholeMessage = HtmlCompat.fromHtml(msg, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val emojifiedMessage = wholeMessage.emojify(
+            glide,
+            account.emojis,
+            binding.notificationText,
+            animateEmojis,
+        )
+        binding.notificationText.text = emojifiedMessage
+        val username = context.getString(DR.string.post_username_format, account.username)
+        binding.notificationUsername.text = username
+        binding.notificationUsername.contentDescription = account.handleContentDescription(context)
+        loadAvatar(
+            glide,
+            account.avatar,
+            binding.notificationAvatar,
+            avatarRadius42dp,
+            animateAvatars,
+        )
+        if (showPronouns) binding.accountPronouns.text = account.pronouns
+        binding.accountPronouns.visible(showPronouns && account.pronouns?.isBlank() == false)
+
+        binding.roleChipGroup.setRoles(account.roles)
+
+        setContent(
+            glide = glide,
+            textView = binding.notificationAccountNote,
+            content = account.note,
+            emojis = account.emojis.orEmpty(),
+            animateEmojis = animateEmojis,
+            removeQuoteInline = false,
+            linksToUnderline = linksToUnderline,
+            linkListener = linkListener,
+        )
+
+        binding.notificationAccountNote.setOnClickListener { linkListener.onViewAccount(account.id) }
+        itemView.setOnClickListener { linkListener.onViewAccount(account.id) }
+
+        binding.root.contentDescription = "$emojifiedMessage.\n\n${account.handleContentDescription(context)}.\n\n${account.note.parseAsMastodonHtml()}"
+    }
+}

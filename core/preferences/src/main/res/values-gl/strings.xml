@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Claro</string>
+    <string name="app_theme_black">Negro</string>
+    <string name="app_theme_auto">Automático ao solpor</string>
+    <string name="app_theme_dark">Escuro</string>
+    <string name="app_theme_system">Usar deseño do sistema</string>
+    <string name="pref_category_downloads">Baixadas</string>
+    <string name="pref_title_downloads">Localización das baixadas</string>
+    <string name="download_location_per_account">Cartafoles por conta, no cartafol Descargas</string>
+    <string name="download_location_downloads">Cartafol para descargas</string>
+    <string name="download_location_per_sender">Cartafoles por conta, no cartafol Descargas</string>
+    <string name="pref_category_tabs">Lapelas</string>
+    <string name="pref_main_nav_position_option_top">Arriba</string>
+    <string name="pref_main_nav_position_option_bottom">Abaixo</string>
+    <string name="pref_show_self_username_always">Sempre</string>
+    <string name="pref_show_self_username_disambiguate">Cando hai máis dunha conta activa</string>
+    <string name="pref_show_self_username_never">Nunca</string>
+    <string name="pref_tab_contents_icon_only">Só a icona</string>
+    <string name="pref_update_notification_frequency_never">Nunca</string>
+    <string name="pref_update_notification_frequency_once_per_version">Unha vez por versión</string>
+    <string name="pref_update_notification_frequency_always">Sempre</string>
+    <string name="pref_title_export_settings">Exportar axustes</string>
+    <string name="pref_title_import_settings">Importar axustes</string>
+    <string name="pref_default_audio_playback_option_unmuted">Desacalar</string>
+    <string name="pref_default_audio_playback_option_muted">Silenciado</string>
+    <string name="pref_title_translation">Tradución</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Ir á páxina seguinte</string>
+    <string name="pref_summary_quote_policy_disabled">O servidor non é compatible cos filtros</string>
+    <string name="pref_underline_links_links">Ligazóns externas</string>
+    <string name="pref_underline_links_hashtags">Cancelos</string>
+</resources>

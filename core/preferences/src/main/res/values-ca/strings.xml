@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Clar</string>
+    <string name="app_theme_black">Negre</string>
+    <string name="app_theme_auto">Brillantor automàtica</string>
+    <string name="app_theme_dark">Fosc</string>
+    <string name="app_theme_system">Utilitzar el tema del sistema</string>
+    <string name="pref_category_downloads">Baixades</string>
+    <string name="pref_title_downloads">Ubicació de les baixades</string>
+    <string name="download_location_downloads">Carpeta Descàrregues</string>
+    <string name="download_location_per_account">Carpetes de comptes, a la carpeta Descàrregues</string>
+    <string name="download_location_per_sender">Carpetes Per-sender, a Carpeta Descàrregues</string>
+    <string name="pref_title_tab_tap">Acció en tocar una pestanya</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Inici &gt; Productes turístics</string>
+    <string name="tab_tap_behaviour_jump_to_newest">L\'Hospitalet de Llobregat</string>
+    <string name="pref_category_tabs">Pestanyes</string>
+    <string name="pref_main_nav_position_option_top">A dalt</string>
+    <string name="pref_main_nav_position_option_bottom">A baix</string>
+    <string name="pref_show_self_username_always">Sempre</string>
+    <string name="pref_show_self_username_disambiguate">Quan s\'inicien la sessió amb diversos comptes</string>
+    <string name="pref_show_self_username_never">Mai</string>
+    <string name="pref_title_tab_alignment">Align principals pestanyes de navegació</string>
+    <string name="pref_tab_alignment_start">Inici de la direcció de text</string>
+    <string name="pref_tab_alignment_end">Finalització de la direcció de text</string>
+    <string name="pref_title_tab_contents">Contingut de les principals pestanyes de navegació</string>
+    <string name="pref_tab_contents_icon_text_inline">Icona amb text al costat</string>
+    <string name="pref_tab_contents_icon_text_below">Icona amb text a sota</string>
+    <string name="pref_tab_alignment_justify_if_possible">Amplieu l\'amplada completa</string>
+    <string name="pref_tab_contents_icon_only">Només la icona</string>
+    <string name="pref_tab_contents_text_only">Només text</string>
+    <string name="pref_title_render_markdown">Render Markdown</string>
+    <string name="pref_update_notification_frequency_never">Mai</string>
+    <string name="pref_update_notification_frequency_always">Sempre</string>
+    <string name="pref_title_export_settings">Configuració d\'exportació</string>
+    <string name="pref_title_import_settings">Configuració d\'importació</string>
+    <string name="pref_default_audio_playback_option_unmuted">No està mut.</string>
+    <string name="pref_default_audio_playback_option_muted">Silenciat</string>
+    <string name="pref_title_translation">Traducció</string>
+    <string name="pref_pronoun_display_everywhere">A tot arreu</string>
+    <string name="pref_underline_links_links">Enllaços externs</string>
+    <string name="pref_underline_links_hashtags">Etiquetes</string>
+</resources>

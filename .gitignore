@@ -1,0 +1,17 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+build
+/captures
+.externalNativeBuild
+gradle-user-home
+profile-out
+profile-out-*
+app/*/release
+app-release.apk
+.kotlin
+.weblate
+
+feature/about/src/main/assets/PRIVACY.md

@@ -1,0 +1,17 @@
+Pachli 2.1.0
+
+Nowości:
+
+- Pokazywanie roli na profilach
+- Pokazywanie przycisku tworzenia wpisu przy wyświetlaniu list
+- Pokazywanie przycisku tworzenia wpisu przy wyświetlaniu zakładek
+
+Poprawki:
+
+- Pokazywanie przetłumaczonych treści w wątkach
+- Poprawne obliczanie długości wpisów i ankiet z emoji
+- Zapobieganie awariom
+  - gdy karta podglądu nie ma osoby autorskiej
+  - gdy błąd występuje na osi czasu bez FAB
+  - w profilach, gdy konto ma puste pole `createdAt`
+- Aktualizacja tłumaczeń

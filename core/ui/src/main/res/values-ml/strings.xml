@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="error_network">ഒരു നെറ്റ്‌വർക്ക് പിഴവ് സംഭവിച്ചിരിക്കുന്നു! ദയവായി താങ്കളുടെ കണക്ഷൻ പരിശോധിച്ചിട്ട് വീണ്ടും ശ്രമിക്കൂ!</string>
+    <string name="error_generic">ഒരു പിഴവ് സംഭവിച്ചിരിക്കുന്നു.</string>
+    <string name="message_empty">ലഭ്യമല്ല</string>
+    <string name="action_retry">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="action_view_profile">പ്രൊഫൈൽ</string>
+    <string name="action_more">കൂടുതൽ</string>
+    <string name="action_links">ലിങ്കുകൾ</string>
+    <string name="action_mentions">സൂചനകൾ</string>
+    <string name="title_links_dialog">ലിങ്കുകൾ</string>
+    <string name="title_mentions_dialog">സൂചനകൾ</string>
+    <string name="button_continue">തുടരുക</string>
+    <string name="action_logout_confirm">ഈ അക്കൗണ്ടിൽ നിന്നും പുറത്തു പോകാൻ ഉറപ്പിച്ചോ %1$s?</string>
+    <string name="add_account_name">അക്കൗണ്ട് ചേർക്കുക</string>
+    <string name="action_logout">പുറത്തിറങ്ങുക</string>
+    <string name="description_visibility_private">പിന്തുടരുന്നവർ</string>
+    <string name="post_sensitive_media_title">സെൻസിറ്റീവ് ഉള്ളടക്കം</string>
+    <string name="post_media_images">ചിത്രങ്ങൾ</string>
+    <string name="post_media_video">വിഡിയോ</string>
+    <string name="action_reply">മറുപടി</string>
+    <string name="action_reblog">ബൂസ്റ്റ്</string>
+    <string name="action_favourite">ഇഷ്ടപ്പെട്ടവ</string>
+    <string name="action_unreblog">ബൂസ്റ്റ് പിൻവലിക്കുക</string>
+    <string name="action_unfavourite">ഇഷ്ടപ്പെട്ടവയിൽ നിന്നും കളയുക</string>
+    <string name="post_content_warning_show_less">അൽപ്പം കാണിക്കൂ</string>
+    <string name="post_content_warning_show_more">കൂടുതൽ കാണിക്കൂ</string>
+    <string name="post_content_show_less">ചുരുക്കുക</string>
+    <string name="post_boosted_fmt">&lt;b&gt;%1$s&lt;/b&gt; ബൂസ്റ്റ് ചെയ്തു</string>
+</resources>

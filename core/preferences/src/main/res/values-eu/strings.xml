@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Argia</string>
+    <string name="app_theme_black">Beltza</string>
+    <string name="app_theme_auto">Automatikoa</string>
+    <string name="app_theme_dark">Iluna</string>
+    <string name="app_theme_system">Erabili sistemaren diseinua</string>
+    <string name="pref_category_downloads">Deskargak</string>
+    <string name="pref_title_downloads">Deskarga kokapena</string>
+    <string name="pref_category_tabs">Tabuladoreak</string>
+    <string name="pref_main_nav_position_option_top">Goian</string>
+    <string name="pref_main_nav_position_option_bottom">Beheran</string>
+    <string name="pref_show_self_username_always">Beti</string>
+    <string name="pref_show_self_username_never">Inoiz ez</string>
+    <string name="pref_tab_contents_icon_only">Ikonoa bakarrik</string>
+    <string name="pref_update_notification_frequency_never">Inoiz ez du</string>
+    <string name="pref_update_notification_frequency_always">Beti</string>
+    <string name="pref_title_export_settings">Esportatu ezarpenak</string>
+    <string name="pref_title_import_settings">Inportatu ezarpenak</string>
+    <string name="pref_default_audio_playback_option_unmuted">Isiltasuna kendua.</string>
+    <string name="pref_default_audio_playback_option_muted">Isilduta</string>
+    <string name="pref_title_translation">Itzulpena</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Salto hurrengo abestira</string>
+    <string name="pref_underline_links_links">Kanpoko estekak</string>
+    <string name="pref_underline_links_hashtags">Traolak</string>
+</resources>

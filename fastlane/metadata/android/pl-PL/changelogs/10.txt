@@ -1,0 +1,5 @@
+Pachli 2.1.1
+
+Poprawki:
+
+- Zapobieganie błędom przy obecnej karcie popularnych elementów

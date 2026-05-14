@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Açık</string>
+    <string name="app_theme_black">Siyah</string>
+    <string name="app_theme_auto">Gün batımında otomatik</string>
+    <string name="app_theme_dark">Koyu</string>
+    <string name="app_theme_system">Sistem tasarımını kullan</string>
+    <string name="pref_category_downloads">İndirilenler</string>
+    <string name="pref_title_downloads">İndirme konumu</string>
+    <string name="download_location_downloads">Downloads klasörü</string>
+    <string name="download_location_per_account">Per-account klasörleri, Downloads klasörü</string>
+    <string name="download_location_per_sender">Per-sender klasörleri, Downloads klasörü</string>
+    <string name="pref_title_tab_tap">Bir sekmeye dokunduğu zaman</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Bir sonraki sayfaya atla</string>
+    <string name="tab_tap_behaviour_jump_to_newest">En yeni içeriğe atla</string>
+    <string name="pref_category_tabs">Sekmeler</string>
+    <string name="pref_main_nav_position_option_top">Üst</string>
+    <string name="pref_main_nav_position_option_bottom">Alt</string>
+    <string name="pref_show_self_username_always">Daima</string>
+    <string name="pref_show_self_username_disambiguate">Birden fazla oturum açıldığında</string>
+    <string name="pref_show_self_username_never">Asla</string>
+    <string name="pref_tab_contents_icon_only">Sadece simge</string>
+    <string name="pref_tab_contents_text_only">Yalnızca Metin</string>
+    <string name="pref_tab_contents_icon_text_inline">Icon with text outside</string>
+    <string name="pref_tab_contents_icon_text_below">Icon with text below</string>
+    <string name="pref_title_tab_alignment">Align ana navigasyon sekmeleri</string>
+    <string name="pref_tab_alignment_start">Metin yönüne başlayın</string>
+    <string name="pref_tab_alignment_justify_if_possible">Tam genişlik</string>
+    <string name="pref_tab_alignment_end">Metin yönünün sonu</string>
+    <string name="pref_title_tab_contents">Ana navigasyon sekmelerinin içeriği</string>
+    <string name="pref_title_render_markdown">Render Markdown</string>
+    <string name="pref_update_notification_frequency_never">Asla</string>
+    <string name="pref_update_notification_frequency_always">Her zaman</string>
+    <string name="pref_title_export_settings">Ayarları dışa aktar</string>
+    <string name="pref_title_import_settings">Ayarları içe aktar</string>
+    <string name="pref_default_audio_playback_option_unmuted">Susturulma kaldırıldı.</string>
+    <string name="pref_default_audio_playback_option_muted">Sessiz</string>
+    <string name="pref_title_translation">Çeviri</string>
+    <string name="pref_pronoun_display_everywhere">Her yer</string>
+    <string name="pref_quote_policy_followers">takipçilerinden biri</string>
+    <string name="pref_underline_links_links">Harici bağlantılar</string>
+    <string name="pref_underline_links_hashtags">Etiketler</string>
+</resources>

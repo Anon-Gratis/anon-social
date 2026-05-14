@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Hela</string>
+    <string name="app_theme_black">Nigra</string>
+    <string name="app_theme_auto">Aŭtomata laŭ la horo</string>
+    <string name="app_theme_dark">Malhela</string>
+    <string name="app_theme_system">Uzi sisteman etoson</string>
+    <string name="download_location_downloads">Elŝutu faldojn</string>
+    <string name="download_location_per_account">Per-akcentaj faldoj, en Downloads faldas</string>
+    <string name="pref_title_downloads">Elŝutu lokon</string>
+    <string name="pref_category_downloads">Elŝutoj</string>
+    <string name="download_location_per_sender">Per-sender-falintoj, en Downloads faldinto</string>
+    <string name="pref_title_tab_tap">Ago kiam gustumante klakon</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Saltu al la sekva paĝo</string>
+    <string name="tab_tap_behaviour_jump_to_newest">Plej nova enhavo</string>
+    <string name="pref_category_tabs">Langetoj</string>
+    <string name="pref_main_nav_position_option_top">Supro</string>
+    <string name="pref_main_nav_position_option_bottom">Malsupro</string>
+    <string name="pref_show_self_username_always">Ĉiam</string>
+    <string name="pref_show_self_username_disambiguate">Kiam vi uzas plurajn kontojn</string>
+    <string name="pref_show_self_username_never">Neniam</string>
+    <string name="pref_title_tab_alignment">Align ĉefa navigado klakas</string>
+    <string name="pref_tab_alignment_start">Komenco de teksto direkto</string>
+    <string name="pref_tab_alignment_justify_if_possible">Aplikita al plena larĝo</string>
+    <string name="pref_tab_alignment_end">Fino de teksto direkto</string>
+    <string name="pref_title_tab_contents">Enhavo de ĉefa navigado klakas</string>
+    <string name="pref_tab_contents_text_only">Teksto nur</string>
+    <string name="pref_tab_contents_icon_text_inline">Ikono kun teksto apud</string>
+    <string name="pref_tab_contents_icon_text_below">Ikono kun teksto sub</string>
+    <string name="pref_tab_contents_icon_only">Nur piktogramo</string>
+    <string name="pref_title_render_markdown">Render Markdown</string>
+    <string name="pref_update_notification_frequency_never">Neniam</string>
+    <string name="pref_update_notification_frequency_always">Ĉiam</string>
+    <string name="pref_title_export_settings">Elporti agordojn</string>
+    <string name="pref_title_import_settings">Enporti agordojn</string>
+    <string name="pref_default_audio_playback_option_unmuted">Malmutigite.</string>
+    <string name="pref_default_audio_playback_option_muted">Silentigita</string>
+    <string name="pref_title_translation">Traduko</string>
+    <string name="pref_underline_links_links">Eksteraj ligiloj</string>
+    <string name="pref_underline_links_hashtags">Kradvortoj</string>
+</resources>

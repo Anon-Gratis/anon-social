@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Lys</string>
+    <string name="app_theme_black">Svart</string>
+    <string name="app_theme_auto">Automatisk ved solnedgang</string>
+    <string name="app_theme_dark">Mørk</string>
+    <string name="app_theme_system">Bruk systeminnstillinger</string>
+    <string name="pref_category_downloads">Nedlastinger</string>
+    <string name="pref_title_downloads">Nedlastingsmappe</string>
+    <string name="download_location_downloads">Nedlastningsmappe:</string>
+    <string name="pref_category_tabs">Faner</string>
+    <string name="pref_main_nav_position_option_top">Topp</string>
+    <string name="pref_main_nav_position_option_bottom">Bunn</string>
+    <string name="pref_show_self_username_always">Alltid</string>
+    <string name="pref_show_self_username_disambiguate">Når flere konti er logget inn</string>
+    <string name="pref_show_self_username_never">Aldri</string>
+    <string name="pref_tab_contents_icon_only">Bare ikonet</string>
+    <string name="pref_tab_contents_text_only">Kun tekst</string>
+    <string name="download_location_per_account">Per-konto mapper i Nedlastinger-mappen</string>
+    <string name="pref_tab_alignment_end">Slutt av tekstretning (høyre)</string>
+    <string name="download_location_per_sender">Per-sender mapper i Nedlastinger-mappen</string>
+    <string name="pref_title_tab_tap">Handling når en fane klikkes</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Hopp til neste side</string>
+    <string name="tab_tap_behaviour_jump_to_newest">Hopp til nyest innhold</string>
+    <string name="pref_title_tab_alignment">Juster hovednavigasjonsfaner</string>
+    <string name="pref_tab_alignment_start">Start av tekstretning (venstre)</string>
+    <string name="pref_tab_alignment_justify_if_possible">Utvid til full bredde</string>
+    <string name="pref_title_tab_contents">Innhold av hovednavigasjonsfaner</string>
+    <string name="pref_tab_contents_icon_text_inline">Ikon med tekst like ved</string>
+    <string name="pref_tab_contents_icon_text_below">Ikon med tekst nedenfor</string>
+    <string name="pref_title_render_markdown">Vis opptegnet Markdown-tekst</string>
+    <string name="pref_update_notification_frequency_never">Aldri</string>
+    <string name="pref_update_notification_frequency_once_per_version">Én gang om versjon</string>
+    <string name="pref_update_notification_frequency_always">Alltid</string>
+    <string name="pref_title_export_settings">Eksporter innstillinger</string>
+    <string name="pref_title_import_settings">Importer innstillinger</string>
+    <string name="pref_default_audio_playback_option_unmuted">Stumhet opphevet.</string>
+    <string name="pref_default_audio_playback_option_muted">Forstummet</string>
+    <string name="pref_title_translation">Oversettelse</string>
+    <string name="pref_pronoun_display_everywhere">Overalt</string>
+    <string name="pref_summary_quote_policy_disabled">Serveren din støtter ikke filtere</string>
+    <string name="pref_underline_links_links">Eksterne lenker</string>
+    <string name="pref_underline_links_hashtags">Stikkord</string>
+</resources>

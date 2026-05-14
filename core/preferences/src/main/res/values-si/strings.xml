@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">දීප්ත</string>
+    <string name="app_theme_black">කළු</string>
+    <string name="app_theme_auto">ස්වයංක්‍රීව ඉර බැසීමේදී</string>
+    <string name="app_theme_dark">අඳුරු</string>
+    <string name="pref_category_downloads">බාගැනීම්</string>
+    <string name="pref_main_nav_position_option_top">මුදුන</string>
+    <string name="pref_main_nav_position_option_bottom">පතුල</string>
+    <string name="pref_show_self_username_always">සැමවිටම</string>
+    <string name="pref_show_self_username_never">කිසිදා නැත</string>
+    <string name="pref_update_notification_frequency_never">කිසිදා නැත</string>
+    <string name="pref_update_notification_frequency_always">සැමවිට</string>
+    <string name="pref_default_audio_playback_option_unmuted">නිහඬ බව නැති කරන්න</string>
+    <string name="pref_default_audio_playback_option_muted">නිහඬ</string>
+    <string name="pref_title_translation">Translation</string>
+</resources>

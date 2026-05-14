@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2023 Pachli Association
+  ~
+  ~ This file is a part of Pachli.
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under the terms of the
+  ~ GNU General Public License as published by the Free Software Foundation; either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+  ~ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+  ~ Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with Pachli; if not,
+  ~ see <http://www.gnu.org/licenses>.
+  -->
+
+<lint>
+    <!-- Missing translations are OK -->
+    <issue id="MissingTranslation" severity="ignore" />
+
+    <!-- Temporarily ignore MissingQuantity errors, due to
+         https://github.com/WeblateOrg/weblate/issues/7520#issuecomment-2632033621 -->
+    <issue id="MissingQuantity" severity="ignore" />
+
+    <!-- Duplicate strings are OK. This can happen when e.g., "favourite" appears as both
+         a noun and a verb -->
+    <issue id="DuplicateStrings" severity="ignore" />
+
+    <!-- Resource IDs used in viewbinding are incorrectly reported as unused,
+         https://issuetracker.google.com/issues/204797401.
+
+         Disable these for the time being. -->
+    <issue id="UnusedIds" severity="ignore" />
+
+    <!-- Logs are stripped in release builds. -->
+    <issue id="LogConditional" severity="ignore" />
+
+    <!-- Newer dependencies are handled by GH Actions, and don't need a warning -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+
+    <!-- Typographical quotes are not something we care about at the moment -->
+    <issue id="TypographyQuotes" severity="ignore" />
+
+    <!-- Ensure we are warned about errors in the baseline -->
+    <issue id="LintBaseline" severity="warning" />
+
+    <!-- Warn about typos. The typo database in lint is not exhaustive, and it's unclear
+         how to add to it when it's wrong. -->
+    <issue id="Typos" severity="warning" />
+
+    <!-- Set OldTargetApi back to warning -->
+    <issue id="OldTargetApi" severity="warning" />
+
+    <!-- Disable SyntheticAccessor warnings; R8 handles them effectively, see
+         https://github.com/google/dagger/issues/635#issuecomment-459110004 -->
+    <issue id="SyntheticAccessor" severity="ignore" />
+
+    <!-- Mark all other lint issues as errors -->
+    <issue id="all" severity="error" />
+</lint>

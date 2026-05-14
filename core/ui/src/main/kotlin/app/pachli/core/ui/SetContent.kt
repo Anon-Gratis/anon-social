@@ -1,0 +1,419 @@
+/*
+ * Copyright 2025 Pachli Association
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.core.ui
+
+import android.content.Context
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.URLSpan
+import android.util.TypedValue
+import android.widget.TextView
+import androidx.core.text.getSpans
+import androidx.core.text.method.LinkMovementMethodCompat
+import app.pachli.core.common.string.unicodeWrap
+import app.pachli.core.designsystem.R
+import app.pachli.core.model.Emoji
+import app.pachli.core.model.Hashtag
+import app.pachli.core.model.Status
+import app.pachli.core.network.PachliTagHandler
+import app.pachli.core.network.parseAsMastodonHtml
+import app.pachli.core.network.removeQuoteInline
+import app.pachli.core.preferences.LinksToUnderline
+import app.pachli.core.ui.PreProcessMastodonHtml.processMarkdown
+import app.pachli.core.ui.taghandler.LeadingMarginWithTextSpan
+import app.pachli.core.ui.taghandler.MastodonTagHandler
+import com.bumptech.glide.RequestManager
+import com.google.android.material.color.MaterialColors
+import com.mohamedrejeb.ksoup.entities.KsoupEntities
+import io.noties.markwon.AbstractMarkwonPlugin
+import io.noties.markwon.Markwon
+import io.noties.markwon.MarkwonConfiguration
+import io.noties.markwon.MarkwonPlugin
+import io.noties.markwon.RenderProps
+import io.noties.markwon.SoftBreakAddsNewLinePlugin
+import io.noties.markwon.core.MarkwonTheme
+import io.noties.markwon.core.spans.CodeBlockSpan
+import io.noties.markwon.core.spans.CodeSpan
+import io.noties.markwon.ext.latex.JLatexMathPlugin
+import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
+import io.noties.markwon.html.HtmlPlugin
+import io.noties.markwon.html.HtmlTag
+import io.noties.markwon.html.tag.SimpleTagHandler
+import io.noties.markwon.inlineparser.MarkwonInlineParserPlugin
+import io.noties.markwon.movement.MovementMethodPlugin
+import io.noties.markwon.syntax.Prism4jThemeDefault
+import io.noties.markwon.syntax.SyntaxHighlightPlugin
+import io.noties.prism4j.Prism4j
+import io.noties.prism4j.annotations.PrismBundle
+import java.util.Collections
+import kotlin.math.roundToInt
+
+/**
+ * Interface for setting the content of a [TextView] to Mastodon HTML that
+ * has been processed for display.
+ *
+ * @see [invoke]
+ */
+interface SetContent {
+    /**
+     * Processes [content] (assumed to be Mastodon HTML) and sets it as the text
+     * for [textView].
+     *
+     * The content is parsed by [parseToSpanned].
+     *
+     * Emojis in [content] that are also present in [emojis] are loaded and
+     * embedded using [glide], optionally animated depending on [animateEmojis].
+     *
+     * Any [mentions], and [hashtags] are made clickable and sent to [linkListener].
+     *
+     * @param glide [RequestManager] to use to load images.
+     * @param textView [TextView] to load the final content in to.
+     * @param content Content to parse and load.
+     * @param emojis
+     * @param animateEmojis True if emojis should be animated.
+     * @param removeQuoteInline If true, remove `p` elements with a `quote-inline` class.
+     * @param linksToUnderline
+     * @param mentions
+     * @param hashtags
+     * @param tagHandler
+     * @param linkListener
+     */
+    operator fun invoke(
+        glide: RequestManager,
+        textView: TextView,
+        content: CharSequence,
+        emojis: List<Emoji>,
+        animateEmojis: Boolean,
+        removeQuoteInline: Boolean,
+        linksToUnderline: Set<LinksToUnderline>,
+        mentions: List<Status.Mention>? = null,
+        hashtags: List<Hashtag>? = null,
+        tagHandler: PachliTagHandler? = null,
+        linkListener: LinkListener,
+    ) {
+        val spannableStringBuilder = SpannableStringBuilder().apply {
+            append(parseToSpanned(textView, content, removeQuoteInline, tagHandler))
+
+            getSpans(0, length, URLSpan::class.java).forEach {
+                convertUrlSpanToMoreSpecificType(it, linksToUnderline, this, mentions, hashtags, linkListener)
+            }
+
+            val hashtagsInContent = getSpans(0, length, HashtagSpan::class.java).map {
+                it.hashtag
+            }.toSet()
+            val oobHashtags = hashtags.orEmpty().filterNot { hashtagsInContent.contains(it.name) }
+
+            val underlineHashtags = linksToUnderline.contains(LinksToUnderline.HASHTAGS)
+            val oobSpans = oobHashtags.map { tag ->
+                HashtagSpan(tag.name, underlineHashtags, tag.url) { linkListener.onViewTag(tag.name) }
+            }
+
+            if (oobSpans.isNotEmpty()) {
+                append("\n\n")
+
+                oobSpans.forEachIndexed { index, span ->
+                    val start = length
+                    append("#${span.hashtag}".unicodeWrap())
+                    val end = length
+                    if (index < oobSpans.size) append(" ")
+                    setSpan(span, start, end, 0)
+                }
+            }
+
+            emojify(glide, emojis, textView, animateEmojis)
+
+            markupHiddenUrls(textView, this)
+        }
+
+        setText(textView, spannableStringBuilder)
+        textView.movementMethod = LinkMovementMethodCompat.getInstance()
+    }
+
+    /**
+     * Parse [content] to [Spanned].
+     *
+     * Implementations of [SetContent] should override this to perform the
+     * actual parsing. Post-processing is handled in [invoke].
+     *
+     * @param textView [TextView] to load the final content in to.
+     * @param content The content to parse, expected to be HTML.
+     * @param removeQuoteInline If true, remove any `p` elements with a `quote-inline`
+     * class as part of parsing.
+     * @param tagHandler Optional [PachliTagHandler] to use when parsing HTML.
+     *
+     * @return [content] converted to a [Spanned] string.
+     */
+    fun parseToSpanned(textView: TextView, content: CharSequence, removeQuoteInline: Boolean, tagHandler: PachliTagHandler? = null): Spanned
+
+    /** Sets the content of [textView] to [text]. */
+    fun setText(textView: TextView, text: Spannable)
+}
+
+/**
+ * Sets content by parsing it as Mastodon HTML.
+ */
+object SetContentAsMastodonHtml : SetContent {
+    override fun parseToSpanned(
+        textView: TextView,
+        content: CharSequence,
+        removeQuoteInline: Boolean,
+        tagHandler: PachliTagHandler?,
+    ): Spanned {
+        return if (removeQuoteInline) {
+            content.removeQuoteInline().parseAsMastodonHtml(tagHandler = tagHandler ?: MastodonTagHandler(textView))
+        } else {
+            content.parseAsMastodonHtml(tagHandler = tagHandler ?: MastodonTagHandler(textView))
+        }
+    }
+
+    override fun setText(textView: TextView, text: Spannable) {
+        // HTML like this:
+        //
+        // <ul>
+        //   <li>one</li>
+        //   <li>two</li>
+        //   <li><ul><li>a</li><li>b</li></ul></li>
+        // </ul>
+        //
+        // will have created nested LeadingMarginWithTextSpans for the third item, the
+        // nested list.
+        //
+        // This is a problem, because the nested LeadingMarginWithTextSpans will each
+        // draw their own marker. So the output for the above looks like:
+        //
+        // ```
+        //  * one
+        //  * two
+        //  *  * a
+        //  *  * b
+        // ```
+        //
+        // To fix this (hack) update `computeMarginText` in the outermost spans to return
+        // the empty string.
+
+        // First, find all spans that share a start index.
+        //
+        // key: Index of the start of the span in `text`.
+        // value: List<Span>, a list of all spans starting at `key`, sorted, shortest span
+        // first.
+        val spansSharingStartIndex = text.getSpans<LeadingMarginWithTextSpan>(0, text.length)
+            .groupBy { text.getSpanStart(it) }
+            .filter { it.value.size != 1 }
+            .mapValues { it.value.sortedBy { text.getSpanEnd(it) } }
+
+        // Then update the margin text of all spans except the first (which is the shortest).
+        spansSharingStartIndex.values.forEach { spans ->
+            spans.drop(1).forEach { span -> span.computeMarginText = { "" } }
+        }
+
+        textView.text = text
+    }
+}
+
+/**
+ * Sets content by parsing it as Markdown.
+ */
+@PrismBundle(includeAll = true, grammarLocatorClassName = ".MySuperGrammerLocator")
+class SetContentAsMarkdown(context: Context) : SetContent {
+    val textSize: Float
+
+    init {
+        val typedValue = TypedValue()
+        val displayMetrics = context.resources.displayMetrics
+        context.theme.resolveAttribute(R.attr.status_text_medium, typedValue, true)
+        textSize = typedValue.getDimension(displayMetrics)
+    }
+
+    private val markwon = Markwon.builder(context)
+        .usePlugin(MovementMethodPlugin.create(LinkMovementMethodCompat.getInstance()))
+        .usePlugin(HtmlPlugin.create())
+        .usePlugin(
+            object : AbstractMarkwonPlugin() {
+                override fun configure(registry: MarkwonPlugin.Registry) {
+                    registry.require(HtmlPlugin::class.java) { htmlPlugin ->
+                        htmlPlugin.addHandler(CodeTagHandler)
+                        htmlPlugin.addHandler(PreTagHandler)
+                    }
+                }
+            },
+        )
+        .usePlugin(SoftBreakAddsNewLinePlugin.create())
+        .usePlugin(MarkwonInlineParserPlugin.create())
+        .usePlugin(
+            JLatexMathPlugin.create(textSize) {
+                it.inlinesEnabled(true)
+            },
+        )
+        .usePlugin(
+            SyntaxHighlightPlugin.create(
+                Prism4j(MySuperGrammerLocator()),
+                Prism4jThemeDefault.create(),
+            ),
+        )
+        .usePlugin(StrikethroughPlugin.create())
+        .usePlugin(PreProcessMastodonHtml)
+        // Has to be at the end of the list, see https://github.com/noties/Markwon/issues/494
+        .usePlugin(PachliMarkwonTheme(context, textSize))
+        .build()
+
+    override fun parseToSpanned(textView: TextView, content: CharSequence, removeQuoteInline: Boolean, tagHandler: PachliTagHandler?): Spanned {
+        return markwon.toMarkdown(if (removeQuoteInline) content.removeQuoteInline() else content.toString())
+    }
+
+    override fun setText(textView: TextView, text: Spannable) {
+        markwon.setParsedMarkdown(textView, text)
+    }
+}
+
+private object CodeTagHandler : SimpleTagHandler() {
+    override fun getSpans(configuration: MarkwonConfiguration, renderProps: RenderProps, tag: HtmlTag): Any {
+        return CodeSpan(configuration.theme())
+    }
+
+    override fun supportedTags(): Collection<String> = Collections.singleton("code")
+}
+
+private object PreTagHandler : SimpleTagHandler() {
+    override fun getSpans(configuration: MarkwonConfiguration, renderProps: RenderProps, tag: HtmlTag): Any {
+        return CodeBlockSpan(configuration.theme())
+    }
+
+    override fun supportedTags(): Collection<String> = Collections.singleton("pre")
+}
+
+/**
+ * Markwon theme plugin to set foreground and background colours for code blocks
+ * (inline and fenced) from the app theme, to ensure code blocks are still legible
+ * in light and dark themes.
+ */
+class PachliMarkwonTheme(private val context: Context, private val textSize: Float) : AbstractMarkwonPlugin() {
+    override fun configureTheme(builder: MarkwonTheme.Builder) {
+        val blockQuoteStripeColor = MaterialColors.getColor(
+            context,
+            androidx.appcompat.R.attr.colorPrimary,
+            Color.BLACK,
+        )
+
+        val codeBackgroundColor = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorSurfaceContainerLow,
+            Color.WHITE,
+        )
+
+        val codeTextColor = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorOnSurfaceVariant,
+            Color.BLACK,
+        )
+
+        builder
+            .blockMargin(textSize.roundToInt())
+            .blockQuoteColor(blockQuoteStripeColor)
+            .blockQuoteWidth((textSize / 4).roundToInt())
+            .codeBackgroundColor(codeBackgroundColor)
+            .codeTextColor(codeTextColor)
+            .codeBlockBackgroundColor(codeBackgroundColor)
+            .codeBlockTextColor(codeTextColor)
+    }
+}
+
+/**
+ * Markwon plugin that pre-processes HTML from Mastodon before processing as Markdown.
+ *
+ * @see [processMarkdown]
+ */
+object PreProcessMastodonHtml : AbstractMarkwonPlugin() {
+    /** Match the contents of a fenced code block. */
+    private val rxCodeBlock =
+        """^```(.*?)^```""".toRegex(setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.MULTILINE))
+
+    /** Match any start or end tag. */
+    private val rxTag = """</?[^>]+?>""".toRegex(RegexOption.DOT_MATCHES_ALL)
+
+    /** Match any inline code element (i.e., between two literal backquotes. */
+    private val rxLiteral = """(?<!`)`(.+?)`""".toRegex(setOf(RegexOption.MULTILINE))
+
+    /**
+     * Match any opening `p` element, with optional whitespace before it, and optional
+     * whitespace immediately after the opening tag.
+     *
+     * The optional whitespace after the tag is to catch `<p>   ...`, which would
+     * appear as a code block because of the indentation.
+     */
+    private val rxPEl = """\s*<p\s*>\s*""".toRegex()
+
+    /** Match `<br>`, `<br/>` (with optional spaces). */
+    private val rxBrEl = """<br\s*/?>""".toRegex()
+
+    /**
+     * Match `~~~` at the start of a line. These are an alternative mechanism for
+     * starting a fenced code block. They seem to be much less frequent than
+     * using backticks.
+     */
+    private val rxThreeTilde = """^~~~""".toRegex(RegexOption.MULTILINE)
+
+    /**
+     * Processes [input] and removes/replaces some HTML content.
+     *
+     * Any Markdown in [input] will be wrapped in HTML block elements. Undo those,
+     * so the content becomes "Markdown that possibly contains embedded HTML" and not
+     * "HTML that might contain some Markdown directives".
+     */
+    override fun processMarkdown(input: String): String {
+        // Known differences from Mastodon web rendering
+        //
+        // - Links in fenced code blocks are not clickable
+        //   Eg., a hashtag in a fenced code block is not clickable
+        val processed = input
+            // Remove <p> with any preceeding whitespace (just in case a paragraph was
+            // indented -- not removing the whitespace could cause it to be treated as
+            // a code block).
+            .replace(rxPEl, "")
+            // </p> ends a paragraph, Markdown needs two blank lines as separators.
+            .replace("</p>", "\n\n")
+            // <br> and variations become "\n".
+            .replace(rxBrEl, "\n")
+            // Convert leading quote markers from entities to ">".
+            .replace("&gt; ", "> ")
+            // Three ~ at the start of a line are unlikely to be a fenced code block
+            // and are more likely to be decoration. Escape them so they are not parsed
+            // as code.
+            //
+            // https://dair-community.social/@emilymbender/114172441506624981
+            .replace(rxThreeTilde, Regex.escapeReplacement("""\~\~\~"""))
+            // Hack for Mathstodon. Mathstodon uses `\[...\]` for block latex content
+            // and `\(...\)` for inline latex content (those are literal backslash and
+            // bracket/brace characters). Rewrite those to block or inline level `$$`
+            // strings so the JLatexMath plugin will parse them.
+            .replace("""\[""", "\n\n$$\n")
+            .replace("""\]""", "\n$$\n\n")
+            .replace("""\(""", "$$")
+            .replace("""\)""", "$$")
+            // HTML in fenced code blocks is treated literally by Markwon.
+            // So remove all HTML tags inside fenced blocks (keep the content).
+            //
+            // There may be HTML entities that need to be converted.
+            .replace(rxCodeBlock) { KsoupEntities.decodeHtml(it.value.replace(rxTag, "")) }
+            // Convert any HTML entities in inline code.
+            .replace(rxLiteral) { KsoupEntities.decodeHtml(it.value) }
+
+        return processed
+    }
+}

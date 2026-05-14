@@ -1,0 +1,5 @@
+Pachli 2.5.1
+
+Ceartúcháin:
+
+- Ná cumasaigh ach gníomhartha inrochtana ar fhógraí a ghabhann le stádas

@@ -1,0 +1,342 @@
+/*
+ * Copyright 2019 Tusky Contributors
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <https://www.gnu.org/licenses>.
+ */
+
+package app.pachli
+
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.MenuProvider
+import androidx.core.view.ViewGroupCompat
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
+import app.pachli.core.activity.ViewUrlActivity
+import app.pachli.core.activity.extensions.TransitionKind
+import app.pachli.core.activity.extensions.startActivityWithTransition
+import app.pachli.core.common.extensions.viewBinding
+import app.pachli.core.common.util.unsafeLazy
+import app.pachli.core.data.repository.ContentFilterEdit
+import app.pachli.core.data.repository.ContentFiltersRepository
+import app.pachli.core.data.repository.canFilterV1
+import app.pachli.core.data.repository.canFilterV2
+import app.pachli.core.data.repository.createDraft
+import app.pachli.core.eventhub.EventHub
+import app.pachli.core.model.ContentFilter
+import app.pachli.core.model.Draft
+import app.pachli.core.model.FilterAction
+import app.pachli.core.model.FilterContext
+import app.pachli.core.model.NewContentFilter
+import app.pachli.core.model.NewContentFilterKeyword
+import app.pachli.core.model.Timeline
+import app.pachli.core.navigation.ComposeActivityIntent
+import app.pachli.core.navigation.ComposeActivityIntent.ComposeOptions
+import app.pachli.core.navigation.TimelineActivityIntent
+import app.pachli.core.navigation.pachliAccountId
+import app.pachli.core.ui.appbar.FadeChildScrollEffect
+import app.pachli.core.ui.extensions.addScrollEffect
+import app.pachli.core.ui.extensions.applyDefaultWindowInsets
+import app.pachli.databinding.ActivityTimelineBinding
+import app.pachli.interfaces.ActionButtonActivity
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
+import timber.log.Timber
+
+/**
+ * Show a single timeline.
+ */
+@AndroidEntryPoint
+class TimelineActivity : ViewUrlActivity(), ActionButtonActivity, MenuProvider {
+    @Inject
+    lateinit var eventHub: EventHub
+
+    @Inject
+    lateinit var contentFiltersRepository: ContentFiltersRepository
+
+    private val binding by viewBinding(ActivityTimelineBinding::inflate)
+    private lateinit var timeline: Timeline
+
+    override val actionButton: FloatingActionButton? by unsafeLazy { binding.composeButton }
+
+    private val pachliAccountId by unsafeLazy { intent.pachliAccountId }
+
+    /**
+     * If showing statuses with a hashtag, the hashtag being used, without the
+     * leading `#`.
+     */
+    private var hashtag: String? = null
+    private var followTagItem: MenuItem? = null
+    private var unfollowTagItem: MenuItem? = null
+    private var muteTagItem: MenuItem? = null
+    private var unmuteTagItem: MenuItem? = null
+
+    /** The filter muting hashtag, null if unknown or hashtag is not filtered */
+    private var mutedContentFilter: ContentFilter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+        ViewGroupCompat.installCompatInsetsDispatch(binding.root)
+        binding.includedToolbar.appbar.applyDefaultWindowInsets()
+        binding.includedToolbar.toolbar.addScrollEffect(FadeChildScrollEffect)
+        binding.composeButton.applyDefaultWindowInsets()
+
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.includedToolbar.toolbar)
+        addMenuProvider(this)
+
+        timeline = TimelineActivityIntent.getTimeline(intent)
+        hashtag = (timeline as? Timeline.Hashtags)?.tags?.firstOrNull()
+
+        val tabViewData = TabViewData.from(pachliAccountId, timeline)
+
+        supportActionBar?.run {
+            title = tabViewData.title(this@TimelineActivity)
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+        }
+
+        if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
+            supportFragmentManager.commit {
+                val fragment = tabViewData.fragment()
+                replace(R.id.fragmentContainer, fragment)
+                binding.composeButton.show()
+            }
+        }
+
+        binding.composeButton.setOnClickListener {
+            lifecycleScope.launch {
+                val account = accountManager.getAccountById(pachliAccountId)!!
+                val draft = Draft.createDraft(this@TimelineActivity, account, timeline)
+                val composeOptions = ComposeOptions(draft = draft)
+                val intent = ComposeActivityIntent(this@TimelineActivity, pachliAccountId, composeOptions)
+                startActivityWithTransition(intent, TransitionKind.SLIDE_FROM_END)
+            }
+        }
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(app.pachli.core.ui.R.menu.action_add_to_tab, menu)
+
+        hashtag?.let { tag ->
+            lifecycleScope.launch {
+                mastodonApi.tag(tag).onSuccess {
+                    val tagEntity = it.body
+                    menuInflater.inflate(R.menu.view_hashtag_toolbar, menu)
+                    followTagItem = menu.findItem(R.id.action_follow_hashtag)
+                    unfollowTagItem = menu.findItem(R.id.action_unfollow_hashtag)
+                    muteTagItem = menu.findItem(R.id.action_mute_hashtag)
+                    unmuteTagItem = menu.findItem(R.id.action_unmute_hashtag)
+                    followTagItem?.isVisible = tagEntity.following == false
+                    unfollowTagItem?.isVisible = tagEntity.following == true
+                    updateMuteTagMenuItems(tag)
+                }.onFailure {
+                    Timber.w("Failed to query tag #%s: %s", tag, it)
+                }
+            }
+        }
+
+        return super.onCreateMenu(menu, menuInflater)
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
+        // Check if this timeline is in a tab; if not, enable the add_to_tab menu item
+        // Timeline.Link (all posts about a specific link) and Timeline.Quote are
+        // special-cased to not be addable to a tab).
+        val currentTabs = accountManager.activeAccount?.tabPreferences.orEmpty()
+        val hideMenu = timeline is Timeline.Link || timeline is Timeline.Quote || currentTabs.contains(timeline)
+        menu.findItem(app.pachli.core.ui.R.id.action_add_to_tab)?.isVisible = !hideMenu
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            app.pachli.core.ui.R.id.action_add_to_tab -> {
+                addToTab()
+                Toast.makeText(this, getString(app.pachli.core.ui.R.string.action_add_to_tab_success, supportActionBar?.title), Toast.LENGTH_LONG).show()
+                menuItem.isVisible = false
+                true
+            }
+            R.id.action_follow_hashtag -> {
+                followTag()
+                true
+            }
+            R.id.action_unfollow_hashtag -> {
+                unfollowTag()
+                true
+            }
+            R.id.action_mute_hashtag -> {
+                muteTag()
+                true
+            }
+            R.id.action_unmute_hashtag -> {
+                unmuteTag()
+                true
+            }
+            else -> super.onMenuItemSelected(menuItem)
+        }
+    }
+
+    private fun addToTab() {
+        accountManager.activeAccount?.let {
+            lifecycleScope.launch(Dispatchers.IO) {
+                accountManager.setTabPreferences(it.id, it.tabPreferences + timeline)
+            }
+        }
+    }
+
+    private fun followTag(): Boolean {
+        val tag = hashtag
+        if (tag != null) {
+            lifecycleScope.launch {
+                mastodonApi.followTag(tag).onSuccess {
+                    followTagItem?.isVisible = false
+                    unfollowTagItem?.isVisible = true
+                }.onFailure {
+                    Snackbar.make(binding.root, getString(R.string.error_following_hashtag_format, tag), Snackbar.LENGTH_SHORT).show()
+                    Timber.e("Failed to follow #%s: %s", tag, it)
+                }
+            }
+        }
+
+        return true
+    }
+
+    private fun unfollowTag(): Boolean {
+        val tag = hashtag
+        if (tag != null) {
+            lifecycleScope.launch {
+                mastodonApi.unfollowTag(tag).onSuccess {
+                    followTagItem?.isVisible = true
+                    unfollowTagItem?.isVisible = false
+                }.onFailure {
+                    Snackbar.make(binding.root, getString(R.string.error_unfollowing_hashtag_format, tag), Snackbar.LENGTH_SHORT).show()
+                    Timber.e("Failed to unfollow #%s: %s", tag, it)
+                }
+            }
+        }
+
+        return true
+    }
+
+    /**
+     * Determine if the given hashtag is muted, and update the UI state accordingly.
+     */
+    private fun updateMuteTagMenuItems(tag: String) {
+        val tagWithHash = "#$tag"
+
+        muteTagItem?.isVisible = true
+        muteTagItem?.isEnabled = false
+        unmuteTagItem?.isVisible = false
+
+        lifecycleScope.launch {
+            accountManager.getPachliAccountFlow(pachliAccountId)
+                .filterNotNull()
+                .distinctUntilChangedBy { it.contentFilters }
+                .collect { account ->
+                    if (account.server.canFilterV2() || account.server.canFilterV1()) {
+                        mutedContentFilter = account.contentFilters.contentFilters.firstOrNull { filter ->
+                            filter.contexts.contains(FilterContext.HOME) &&
+                                filter.keywords.any { it.keyword == tagWithHash }
+                        }
+                        updateTagMuteState(mutedContentFilter != null)
+                    } else {
+                        // If the server can't filter then it's impossible to mute hashtags,
+                        // so disable the functionality.
+                        muteTagItem?.isVisible = false
+                        unmuteTagItem?.isVisible = false
+                    }
+                }
+        }
+    }
+
+    private fun updateTagMuteState(muted: Boolean) {
+        if (muted) {
+            muteTagItem?.isVisible = false
+            muteTagItem?.isEnabled = false
+            unmuteTagItem?.isVisible = true
+        } else {
+            unmuteTagItem?.isVisible = false
+            muteTagItem?.isEnabled = true
+            muteTagItem?.isVisible = true
+        }
+    }
+
+    private fun muteTag() {
+        val tagWithHash = hashtag?.let { "#$it" } ?: return
+
+        lifecycleScope.launch {
+            val newContentFilter = NewContentFilter(
+                title = tagWithHash,
+                contexts = setOf(FilterContext.HOME),
+                filterAction = FilterAction.WARN,
+                expiresIn = 0,
+                keywords = listOf(
+                    NewContentFilterKeyword(
+                        keyword = tagWithHash,
+                        wholeWord = true,
+                    ),
+                ),
+            )
+
+            contentFiltersRepository.createContentFilter(pachliAccountId, newContentFilter)
+                .onSuccess {
+                    mutedContentFilter = it
+                    updateTagMuteState(true)
+                    Snackbar.make(binding.root, getString(R.string.confirmation_hashtag_muted, hashtag), Snackbar.LENGTH_SHORT).show()
+                }
+                .onFailure {
+                    Snackbar.make(binding.root, getString(R.string.error_muting_hashtag_format, hashtag), Snackbar.LENGTH_SHORT).show()
+                    Timber.e("Failed to mute %s: %s", tagWithHash, it.fmt(this@TimelineActivity))
+                }
+        }
+    }
+
+    private fun unmuteTag() {
+        lifecycleScope.launch {
+            val tagWithHash = hashtag?.let { "#$it" } ?: return@launch
+
+            val result = mutedContentFilter?.let { filter ->
+                val newContexts = filter.contexts.filter { it != FilterContext.HOME }
+                if (newContexts.isEmpty()) {
+                    contentFiltersRepository.deleteContentFilter(pachliAccountId, filter.id)
+                } else {
+                    contentFiltersRepository.updateContentFilter(pachliAccountId, filter, ContentFilterEdit(filter.id, contexts = newContexts))
+                }
+            }
+
+            result?.onSuccess {
+                updateTagMuteState(false)
+                Snackbar.make(binding.root, getString(R.string.confirmation_hashtag_unmuted, hashtag), Snackbar.LENGTH_SHORT).show()
+                mutedContentFilter = null
+            }?.onFailure { e ->
+                Snackbar.make(binding.root, getString(R.string.error_unmuting_hashtag_format, hashtag), Snackbar.LENGTH_SHORT).show()
+                Timber.e("Failed to unmute %s: %s", tagWithHash, e.fmt(this@TimelineActivity))
+            }
+        }
+    }
+}

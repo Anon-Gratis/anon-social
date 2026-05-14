@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="error_network">In netwurk flater die harren foar! Kontrolearje jo ferbining en probearje it noch ris!</string>
+    <string name="error_generic">Der die harren in flater foar.</string>
+    <string name="message_empty">Hjir is neat.</string>
+    <string name="action_retry">Opnij probearje</string>
+    <string name="action_view_profile">Profyl</string>
+    <string name="action_more">Mear</string>
+    <string name="action_links">Keppelingen</string>
+    <string name="action_hashtags">Hashtags</string>
+    <string name="title_links_dialog">Keppelingen</string>
+    <string name="title_hashtags_dialog">Hashtags</string>
+    <string name="add_account_name">Account Tafoegje</string>
+    <string name="action_logout">Útlogge</string>
+    <string name="abbreviated_in_seconds">oer %1$ds</string>
+    <string name="abbreviated_in_minutes">oer %1$dm</string>
+    <string name="abbreviated_in_hours">oer %1$dh</string>
+    <string name="abbreviated_in_days">oer %1$dd</string>
+    <string name="abbreviated_years_ago">%1$dy</string>
+    <string name="post_sensitive_media_title">Gefoelige ynhâld</string>
+    <string name="post_media_images">Ôfbyldingen</string>
+    <string name="post_media_audio">Lûd</string>
+    <string name="post_media_video">Fideo</string>
+    <string name="post_media_attachments">Taheaksels</string>
+    <string name="action_reply">Reagearje</string>
+    <string name="action_reblog">Boost</string>
+    <string name="action_favourite">As favoryt oanmerke</string>
+    <string name="action_unreblog">Boost fuorthelje</string>
+    <string name="action_unfavourite">Net mear as favoryt oanmerke</string>
+    <string name="post_content_warning_show_less">Minder sjen litte</string>
+    <string name="post_content_warning_show_more">Mear sjen litte</string>
+    <string name="post_content_show_less">Yntearre</string>
+    <string name="filter_edit_title">Filter oanpasse</string>
+</resources>

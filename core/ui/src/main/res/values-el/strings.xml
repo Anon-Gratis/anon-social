@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="error_network">Προέκυψε σφάλμα δικτύου! Παρακαλώ ελέγξτε τη σύνδεσή σας και προσπαθήστε ξανά.</string>
+    <string name="error_generic">Προέκυψε ένα σφάλμα.</string>
+    <string name="action_retry">Προσπαθήστε ξανά</string>
+    <string name="action_view_profile">Προφίλ</string>
+    <string name="action_more">Περισσότερα</string>
+    <string name="action_links">Σύνδεσμοι</string>
+    <string name="title_links_dialog">Σύνδεσμοι</string>
+    <string name="action_logout_confirm">Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε από τον λογαριασμό %1$s;</string>
+    <string name="action_logout">Αποσύνδεση</string>
+    <string name="post_sensitive_media_title">Ευαίσθητο περιεχόμενο</string>
+    <string name="action_reply">Απάντηση</string>
+    <string name="action_reblog">Προώθηση</string>
+    <string name="action_favourite">Αγαπημένο</string>
+    <string name="action_bookmark">Προσθήκη σελιδοδείκτη</string>
+    <string name="action_unreblog">Αφαίρεση προώθησης</string>
+    <string name="action_unfavourite">Αφαίρεση αγαπημένου</string>
+    <string name="post_content_warning_show_less">Δείτε λιγότερα</string>
+    <string name="post_content_warning_show_more">Δείτε περισσότερα</string>
+    <string name="post_boosted_fmt">ο/η &lt;b&gt;%1$s&lt;/b&gt; το προώθησε</string>
+</resources>

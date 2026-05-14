@@ -1,0 +1,5 @@
+Pachli 2.5.1
+
+Poprawki
+
+– Włączanie dostępnych akcji tylko na powiadomieniach połączonych ze statusem

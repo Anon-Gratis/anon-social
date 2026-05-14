@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title_activity">A proposito</string>
+    <string name="about_device_info_title">Il tuo dispositivo</string>
+    <string name="about_account_info_title">Il tuo account</string>
+    <string name="about_copied">Versione e informazioni dispositivo copiate</string>
+    <string name="about_copy">Copia la versione e le informazioni sul dispositivo</string>
+    <string name="about_powered_by_pachli">Fatto usando Pachli</string>
+    <string name="about_pachli_license">Pachli è un programma libero ed open source.
+		È distribuito con licenza GNU General Public License Version 3.
+		Puoi leggere la licenza qui: https://www.gnu.org/licenses/gpl-3.0.en.html</string>
+    <string name="about_project_site">Sito web del progetto: https://pachli.app</string>
+    <string name="about_bug_feature_request_site">Segnala problemi e richiedi funzionalità: https://github.com/pachli/pachli-android/issues</string>
+    <string name="about_privacy_policy">Privacy policy</string>
+    <string name="about_pachli_account">Profilo di Pachli</string>
+    <string name="title_licenses">Licenze</string>
+    <string name="about_device_info">%1$s %2$s\nVersione Android: %3$s\nLivello SDK: %4$d</string>
+    <string name="about_account_info">\@%1$s\@%2$s\nVersione: %3$s</string>
+    <string name="license_description">Pachli contiene codice e risorse dai seguenti progetti open source:</string>
+    <string name="notification_details_title">Dettagli</string>
+    <string name="notification_details_android_notifications_enabled">Le notifiche Android sono abilitate?</string>
+    <string name="notification_details_push_notifications_with_unifiedpush">Notifiche push con UnifiedPush</string>
+    <string name="notification_details_unifiedpush_available">UnifiedPush è disponibile?</string>
+    <string name="notification_details_any_account_needs_migration">Tutti gli account hanno l’elemento ‘push’ OAuth?</string>
+    <string name="notification_details_any_account_needs_migration_help">Uno o più account non hanno l’elemento \'push\' OAuth, le notifiche push sono disabilitate.</string>
+    <string name="notification_details_standby_bucket_never">Mai</string>
+    <string name="notification_details_standby_bucket_unknown">Sconosciuto</string>
+    <string name="notification_log_title">Registro</string>
+    <string name="notification_log_filter_content_description">Filtra registri tramite tag</string>
+    <string name="notification_log_filter">Filtra</string>
+    <string name="notification_log_download_content_description">Scarica registri</string>
+    <string name="notification_log_download">Scarica</string>
+    <string name="notification_log_sort">Ordina i più recenti per primi</string>
+    <string name="notification_log_previous_attempts">Tentativi precedenti: %1$d</string>
+    <string name="notification_log_download_failed">Scaricamento fallito: %1$s</string>
+    <string name="notitication_log_filter_dialog_title">Mostra le priorità del registro</string>
+    <string name="about_nivenly_foundation">Pachli è un progetto <a href="https://nivenly.org">della fondazione Nivenly</a>.</string>
+    <string name="notification_details_usage_event">Restrizioni di gestione dell’energia</string>
+    <string name="notification_details_ago">%1$s fa @ %2$s</string>
+    <string name="notification_details_standby_bucket_exempted">Esentato</string>
+    <string name="notification_details_standby_bucket_active">Attivo. Lavori in background senza restrizioni</string>
+    <string name="notification_details_notifications_enabled_help">Notifications are not enabled for any of your accounts. Change this in Account Preferences > Notifiche. Fino ad allora tutte le notifiche sono disabilitate.</string>
+    <string name="notification_details_accounts_unified_push_subscription">Gli account sono tutti iscritti?</string>
+    <string name="notification_details_pachli_exempt">Pachli è esclusa dall\'ottimizzazione della batteria?</string>
+    <string name="notification_details_usage_event_label">Android può limitare le app e definire cosa sono in grado di fare quando sono attive in sfondo. Questa lista mostra come Pachli sia stata limitata nel corso degli ultimi tre giorni, prima le limitazioni più recenti.</string>
+    <string name="notification_details_standby_bucket_restricted">Ristretta. Uno al giorno</string>
+</resources>

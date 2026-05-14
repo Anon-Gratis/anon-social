@@ -1,0 +1,1 @@
+Plnohodnotný Android klient pre Mastodon a podobné servery.

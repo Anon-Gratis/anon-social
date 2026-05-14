@@ -1,0 +1,16 @@
+Pachli 2.6.0
+
+Gnéithe nua:
+
+ Taispeáin "cuntais mholta"
+ Tacaigh le scagairí freastalaí i GoToSocial 0.16.0
+
+Ceartúcháin:
+
+ Nuashonraigh cló ag filleadh ó Roghanna
+ Eagar ceart teanga stádais
+ Inléiteacht lipéad meán stádais feabhsaithe
+ Cinntigh téacs roghchláir nascleanúna inléite
+ Ná sáraigh uaslíon aicearraí cruthaithe
+ Úsáid cur síos réamhshocraithe ar "Navigate up" in ViewThreadActivity
+ Nuashonraigh aistriúcháin Fhionlainnis, Spáinnise, Sualainnis

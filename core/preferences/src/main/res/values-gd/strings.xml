@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Soilleir</string>
+    <string name="app_theme_black">Dubh</string>
+    <string name="app_theme_auto">Gu fèin-obrachail aig beul na h-oidhche</string>
+    <string name="app_theme_dark">Dorcha</string>
+    <string name="app_theme_system">Cleachd co-dhealbhachd an t-siostaim</string>
+    <string name="pref_category_downloads">Luchdaich a-nuas</string>
+    <string name="pref_category_tabs">Tabaichean</string>
+    <string name="pref_main_nav_position_option_top">Aig a’ bhàrr</string>
+    <string name="pref_main_nav_position_option_bottom">Aig a’ bhonn</string>
+    <string name="pref_show_self_username_always">An-còmhnaidh</string>
+    <string name="pref_show_self_username_disambiguate">Nuair a bhios iomadh cunntas air an clàradh a-steach</string>
+    <string name="pref_show_self_username_never">Chan ann idir</string>
+    <string name="pref_update_notification_frequency_never">Chan ann idir</string>
+    <string name="pref_update_notification_frequency_always">An-còmhnaidh</string>
+    <string name="pref_title_export_settings">Às-phortaich na roghainnean</string>
+    <string name="pref_title_import_settings">Ion-phortaich na roghainnean</string>
+    <string name="pref_default_audio_playback_option_unmuted">Dì-mhùch</string>
+    <string name="pref_title_translation">Eadar-theangachadh</string>
+    <string name="pref_default_audio_playback_option_muted">Mùch</string>
+    <string name="pref_underline_links_hashtags">Tagaichean hais</string>
+</resources>

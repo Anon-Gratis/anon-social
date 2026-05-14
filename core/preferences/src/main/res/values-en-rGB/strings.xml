@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_category_downloads">Downloads</string>
+    <string name="app_theme_light">Light</string>
+    <string name="app_theme_black">Black</string>
+    <string name="app_theme_dark">Dark</string>
+    <string name="pref_category_tabs">Tabs</string>
+    <string name="pref_main_nav_position_option_top">Top</string>
+    <string name="pref_main_nav_position_option_bottom">Bottom</string>
+    <string name="pref_show_self_username_always">Always</string>
+    <string name="pref_show_self_username_never">Never</string>
+    <string name="pref_tab_contents_icon_only">Icon only</string>
+    <string name="pref_tab_contents_text_only">Text only</string>
+    <string name="download_location_downloads">Download folder</string>
+    <string name="pref_update_notification_frequency_never">Never</string>
+    <string name="pref_update_notification_frequency_always">Always</string>
+    <string name="pref_title_export_settings">Export settings</string>
+    <string name="pref_default_audio_playback_option_unmuted">Turn Volume On</string>
+    <string name="pref_default_audio_playback_option_muted">Muted</string>
+    <string name="pref_title_translation">Translation</string>
+    <string name="pref_pronoun_display_everywhere">Everywhere</string>
+    <string name="pref_translation_backend_option_server_only">Server online</string>
+    <string name="pref_underline_links_links">External Links</string>
+    <string name="pref_underline_links_hashtags">Hashtags</string>
+</resources>

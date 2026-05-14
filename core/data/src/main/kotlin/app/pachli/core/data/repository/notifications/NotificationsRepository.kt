@@ -1,0 +1,308 @@
+/*
+ * Copyright (c) 2025 Pachli Association
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.core.data.repository.notifications
+
+import android.content.Context
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.InvalidatingPagingSourceFactory
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.filter
+import app.pachli.core.common.di.ApplicationScope
+import app.pachli.core.data.repository.OfflineFirstStatusRepository
+import app.pachli.core.data.repository.StatusRepository
+import app.pachli.core.database.dao.NotificationDao
+import app.pachli.core.database.dao.RemoteKeyDao
+import app.pachli.core.database.dao.StatusDao
+import app.pachli.core.database.dao.TimelineDao
+import app.pachli.core.database.di.TransactionProvider
+import app.pachli.core.database.model.NotificationAccountFilterDecisionUpdate
+import app.pachli.core.database.model.NotificationData
+import app.pachli.core.database.model.NotificationEntity
+import app.pachli.core.database.model.RemoteKeyEntity
+import app.pachli.core.database.model.RemoteKeyEntity.RemoteKeyKind
+import app.pachli.core.database.model.StatusEntity
+import app.pachli.core.database.model.TimelineAccountEntity
+import app.pachli.core.database.model.asEntity
+import app.pachli.core.model.AccountFilterDecision
+import app.pachli.core.model.FilterAction
+import app.pachli.core.model.Notification
+import app.pachli.core.model.Timeline
+import app.pachli.core.network.model.Status
+import app.pachli.core.network.model.TimelineAccount
+import app.pachli.core.network.model.asModel
+import app.pachli.core.network.model.asNetworkModel
+import app.pachli.core.network.model.pronouns
+import app.pachli.core.network.retrofit.MastodonApi
+import com.github.michaelbull.result.onSuccess
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import timber.log.Timber
+
+/**
+ * Repository for [NotificationData] interacting with the remote [MastodonApi]
+ * using the local database as a cache.
+ */
+@Singleton
+class NotificationsRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    @ApplicationScope private val externalScope: CoroutineScope,
+    private val mastodonApi: MastodonApi,
+    private val transactionProvider: TransactionProvider,
+    private val timelineDao: TimelineDao,
+    private val notificationDao: NotificationDao,
+    private val remoteKeyDao: RemoteKeyDao,
+    private val statusDao: StatusDao,
+    statusRepository: OfflineFirstStatusRepository,
+) : StatusRepository by statusRepository {
+    private var factory: InvalidatingPagingSourceFactory<Int, NotificationData>? = null
+
+    private val remoteKeyTimelineId = Timeline.Notifications.remoteKeyTimelineId
+
+    /**
+     * Set of notification types that **must** have a non-null status. Some servers
+     * break this contract, and notifications from those servers must be filtered
+     * out.
+     *
+     * See https://github.com/tuskyapp/Tusky/issues/2252.
+     */
+    private val notificationTypesWithStatus = setOf(
+        NotificationEntity.Type.FAVOURITE,
+        NotificationEntity.Type.REBLOG,
+        NotificationEntity.Type.STATUS,
+        NotificationEntity.Type.MENTION,
+        NotificationEntity.Type.POLL,
+        NotificationEntity.Type.UPDATE,
+        NotificationEntity.Type.QUOTE,
+        NotificationEntity.Type.QUOTED_UPDATE,
+    )
+
+    /**
+     * @param excludeTypes Types to filter from the results.
+     * @return Notifications for [pachliAccountId].
+     */
+    @OptIn(ExperimentalPagingApi::class)
+    suspend fun notifications(pachliAccountId: Long, excludeTypes: Set<Notification.Type>): Flow<PagingData<NotificationData>> {
+        factory = InvalidatingPagingSourceFactory { notificationDao.getNotificationsWithQuote(pachliAccountId) }
+
+        // Room is row-keyed, not item-keyed. Find the user's REFRESH key, then find the
+        // row of the notification with that ID, and use that as the Pager's initialKey.
+        val initialKey = remoteKeyDao.remoteKeyForKind(pachliAccountId, remoteKeyTimelineId, RemoteKeyKind.REFRESH)?.key
+        val row = initialKey?.let { notificationDao.getNotificationRowNumber(pachliAccountId, it) }
+
+        return Pager(
+            initialKey = row,
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                enablePlaceholders = true,
+            ),
+            remoteMediator = NotificationsRemoteMediator(
+                context,
+                pachliAccountId,
+                mastodonApi,
+                transactionProvider,
+                timelineDao,
+                remoteKeyDao,
+                notificationDao,
+                statusDao,
+                excludeTypes.asNetworkModel(),
+            ),
+            pagingSourceFactory = factory!!,
+        ).flow
+            .map { pagingData ->
+                // Filter out notifications that should have a non-null status but don't.
+                pagingData.filter { notificationData ->
+                    !notificationTypesWithStatus.contains(notificationData.notification.type) || notificationData.status != null
+                }
+            }
+    }
+
+    fun invalidate() = factory?.invalidate()
+
+    /**
+     * Saves the ID of the notification that future refreshes will try and restore
+     * from.
+     *
+     * @param pachliAccountId
+     * @param key Notification ID to restore from. Null indicates the refresh should
+     * refresh the newest notifications.
+     */
+    suspend fun saveRefreshKey(pachliAccountId: Long, key: String?) = externalScope.async {
+        Timber.d("saveRefreshKey: $key")
+        remoteKeyDao.upsert(
+            RemoteKeyEntity(pachliAccountId, remoteKeyTimelineId, RemoteKeyKind.REFRESH, key),
+        )
+    }.await()
+
+    /**
+     * @param pachliAccountId
+     * @return The most recent saved refresh key. Null if not set, or the refresh
+     * should fetch the latest notifications.
+     */
+    suspend fun getRefreshKey(pachliAccountId: Long): String? = externalScope.async {
+        remoteKeyDao.getRefreshKey(pachliAccountId, remoteKeyTimelineId)
+    }.await()
+
+    /**
+     * Clears (deletes) all notifications from the server. Invalidates the repository
+     * if successful.
+     *
+     * @param pachliAccountId
+     */
+    suspend fun clearNotifications(pachliAccountId: Long) = externalScope.async {
+        return@async mastodonApi.clearNotifications().onSuccess {
+            remoteKeyDao.delete(pachliAccountId, remoteKeyTimelineId)
+            notificationDao.deleteAllNotificationsForAccount(pachliAccountId)
+        }
+    }.await()
+
+    /**
+     * Sets the [FilterAction] for [statusId] to [FilterAction.NONE]
+     *
+     * @param pachliAccountId
+     * @param statusId Notification's server ID.
+     */
+    fun clearContentFilter(pachliAccountId: Long, statusId: String) = externalScope.launch {
+        statusDao.clearWarning(pachliAccountId, statusId)
+    }
+
+    /**
+     * Sets the [AccountFilterDecision] for [notificationId] to [accountFilterDecision].
+     *
+     * @param pachliAccountId
+     * @param notificationId Notification's server ID.
+     * @param accountFilterDecision New [AccountFilterDecision].
+     */
+    fun setAccountFilterDecision(
+        pachliAccountId: Long,
+        notificationId: String,
+        accountFilterDecision: AccountFilterDecision,
+    ) = externalScope.launch {
+        notificationDao.upsert(
+            NotificationAccountFilterDecisionUpdate(
+                pachliAccountId,
+                notificationId,
+                accountFilterDecision,
+            ),
+        )
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 30
+    }
+}
+
+/**
+ * @return A [NotificationEntity] from a network [Notification] for [pachliAccountId].
+ */
+fun app.pachli.core.network.model.Notification.asEntity(pachliAccountId: Long) = NotificationEntity(
+    pachliAccountId = pachliAccountId,
+    serverId = id,
+    type = type.asModel().asEntity(),
+    createdAt = createdAt.toInstant(),
+    accountServerId = account.id,
+    statusServerId = status?.id,
+)
+
+fun Notification.Type.asEntity() = when (this) {
+    Notification.Type.UNKNOWN -> NotificationEntity.Type.UNKNOWN
+    Notification.Type.MENTION -> NotificationEntity.Type.MENTION
+    Notification.Type.REBLOG -> NotificationEntity.Type.REBLOG
+    Notification.Type.FAVOURITE -> NotificationEntity.Type.FAVOURITE
+    Notification.Type.FOLLOW -> NotificationEntity.Type.FOLLOW
+    Notification.Type.FOLLOW_REQUEST -> NotificationEntity.Type.FOLLOW_REQUEST
+    Notification.Type.POLL -> NotificationEntity.Type.POLL
+    Notification.Type.STATUS -> NotificationEntity.Type.STATUS
+    Notification.Type.SIGN_UP -> NotificationEntity.Type.SIGN_UP
+    Notification.Type.UPDATE -> NotificationEntity.Type.UPDATE
+    Notification.Type.REPORT -> NotificationEntity.Type.REPORT
+    Notification.Type.SEVERED_RELATIONSHIPS -> NotificationEntity.Type.SEVERED_RELATIONSHIPS
+    Notification.Type.MODERATION_WARNING -> NotificationEntity.Type.MODERATION_WARNING
+    Notification.Type.QUOTE -> NotificationEntity.Type.QUOTE
+    Notification.Type.QUOTED_UPDATE -> NotificationEntity.Type.QUOTED_UPDATE
+}
+
+/**
+ * Converts a timeline Account to an entity, associated with [pachliAccountId].
+ */
+fun TimelineAccount.asEntity(pachliAccountId: Long) = TimelineAccountEntity(
+    serverId = id,
+    timelineUserId = pachliAccountId,
+    localUsername = localUsername,
+    username = username,
+    displayName = name,
+    note = note,
+    url = url,
+    avatar = avatar,
+    emojis = emojis.orEmpty().asModel(),
+    bot = bot,
+    createdAt = createdAt,
+    limited = limited,
+    roles = roles.orEmpty().asModel(),
+    pronouns = fields?.pronouns(),
+)
+
+/**
+ * Converts a network Status to an entity, associated with [pachliAccountId].
+ */
+// Used in NotificationsRemoteMediator, need to look at that in more detail so
+// this can be made private (maybe -- there might be a case for converting a
+// a single status to a single entity, but probably not a TimelineStatusWithAccount
+// as NotificationsRemoteMediator does.
+fun Status.asEntity(pachliAccountId: Long) = this.asModel().asEntity(pachliAccountId)
+
+/**
+ * Converts a single [status] to the one-or-more `StatusEntity` used to
+ * represent the status.
+ *
+ * A single [Status] will be stored as:
+ *
+ * - 1 x [StatusEntity] for the top-level status
+ * - 1 x [StatusEntity] if the top-level status is a reblog, to hold the
+ * status being reblogged.
+ * - N x [StatusEntity] to hold the chain of quotes.
+ */
+fun Status.asEntities(pachliAccountId: Long): List<StatusEntity> {
+    return buildList {
+        val status = this@asEntities
+
+        add(status.asEntity(pachliAccountId))
+        status.reblog?.let {
+            // Recurse, to pick up any quotes on the reblogged status.
+            addAll(it.asEntities(pachliAccountId))
+        }
+
+        var next = status.quote?.quotedStatus
+
+        // TODO: Possibly shouldn't recurse here, should just process the first
+        // quote, if any.
+        while (next != null) {
+            add(next.asEntity(pachliAccountId))
+            next.reblog?.let { add(it.asEntity(pachliAccountId)) }
+
+            next = next.quote?.quotedStatus
+        }
+    }
+}

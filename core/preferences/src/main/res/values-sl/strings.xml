@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Svetla</string>
+    <string name="app_theme_black">Črna</string>
+    <string name="app_theme_auto">Samodejno ob sončnem zahodu</string>
+    <string name="app_theme_dark">Temna</string>
+    <string name="app_theme_system">Uporabi sistemsko temo</string>
+    <string name="pref_category_downloads">Prejemi</string>
+    <string name="pref_category_tabs">Zavihki</string>
+    <string name="pref_main_nav_position_option_top">Zgoraj</string>
+    <string name="pref_main_nav_position_option_bottom">Dno</string>
+    <string name="pref_show_self_username_always">Vedno</string>
+    <string name="pref_show_self_username_never">Nikoli</string>
+    <string name="pref_tab_contents_icon_only">Samo ikona</string>
+    <string name="pref_tab_contents_text_only">Samo besedilo</string>
+    <string name="pref_update_notification_frequency_never">Nikoli</string>
+    <string name="pref_update_notification_frequency_always">Vedno</string>
+    <string name="pref_title_import_settings">Uvozi nastavitve</string>
+    <string name="pref_default_audio_playback_option_unmuted">Prekini utišanje</string>
+    <string name="pref_default_audio_playback_option_muted">Utišan</string>
+    <string name="pref_title_translation">Prevod</string>
+    <string name="pref_pronoun_display_everywhere">Povsod</string>
+    <string name="download_location_downloads">Mapa za prenose: %1</string>
+    <string name="pref_underline_links_links">Zunanje povezave</string>
+    <string name="pref_underline_links_hashtags">Ključniki</string>
+</resources>

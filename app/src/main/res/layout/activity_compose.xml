@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activityCompose"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/hashButton"
+            style="@style/AppImageButton"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/hash_symbol"
+            android:textColor="?android:textColorTertiary"
+            android:textSize="?attr/status_text_large"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/atButton"
+            style="@style/AppImageButton"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/at_symbol"
+            android:textColor="?android:textColorTertiary"
+            android:textSize="?attr/status_text_large"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/composePostLanguageButton"
+            style="@style/AppImageButton"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:contentDescription="@string/description_post_language"
+            android:textColor="?android:attr/textColorTertiary"
+            android:textSize="?attr/status_text_large"
+            android:textStyle="bold"
+            app:tooltipText="@string/description_post_language" />
+
+        <app.pachli.components.compose.view.TootButton
+            android:id="@+id/composeTootButton"
+            style="@style/AppButton"
+            android:layout_width="@dimen/toot_button_width"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="8dp"
+            android:textSize="?attr/status_text_medium" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/composeMainScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/compose_activity_scrollview_height"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginBottom="52dp">
+
+        <!-- Modified from item_status_detailed.xml -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/status_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="8dp">
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/replyProgressIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                android:indeterminate="true"
+                android:contentDescription="" />
+
+            <LinearLayout
+                android:id="@+id/replyLoadingError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorErrorContainer"
+                android:padding="8dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/replyLoadingErrorMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="?colorOnErrorContainer"
+                    android:textIsSelectable="true"
+                    android:textSize="?attr/status_text_medium"
+                    tools:text="An error message"
+                    tools:visibility="visible" />
+
+                <Button
+                    android:id="@+id/replyLoadingErrorRetry"
+                    style="@style/AppButton.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/action_retry"/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/status_avatar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="14dp"
+                android:contentDescription="@string/action_view_profile"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/avatar_default" />
+
+            <ImageView
+                android:id="@+id/status_avatar_inset"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/status_avatar"
+                app:layout_constraintEnd_toEndOf="@id/status_avatar"
+                tools:src="#000"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/status_display_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:importantForAccessibility="no"
+                android:maxLines="1"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="?attr/status_text_medium"
+                android:textStyle="normal|bold"
+                app:layout_constraintStart_toEndOf="@id/status_avatar"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/account_pronouns"
+                app:layout_constraintBottom_toTopOf="@id/status_username"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintHorizontal_weight="1"
+                tools:ignore="SelectableText"
+                tools:text="Display Name" />
+
+            <app.pachli.core.ui.PronounsChip
+                android:id="@+id/account_pronouns"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBaseline_toBaselineOf="@id/status_display_name"
+                app:layout_constraintStart_toEndOf="@id/status_display_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_max="@dimen/pronounChip_maxWidth"
+                tools:text="he/him"
+                tools:ignore="SelectableText" />
+
+            <TextView
+                android:id="@+id/status_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:importantForAccessibility="no"
+                android:maxLines="1"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="?attr/status_text_medium"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="@id/status_avatar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/status_avatar"
+                app:layout_constraintTop_toBottomOf="@id/status_display_name"
+                tools:ignore="SelectableText"
+                tools:text="\@ConnyDuck\@mastodon.social" />
+
+            <app.pachli.core.ui.ClickableSpanTextView
+                android:id="@+id/status_content_warning_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hyphenationFrequency="full"
+                android:importantForAccessibility="no"
+                android:lineSpacingMultiplier="1.1"
+                android:textColor="?android:textColorPrimary"
+                android:textIsSelectable="true"
+                android:textSize="?attr/status_text_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/status_avatar"
+                tools:text="CW this is a long long long long long long long long content warning" />
+
+            <TextView
+                android:id="@+id/status_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:focusable="true"
+                android:hyphenationFrequency="full"
+                android:importantForAccessibility="no"
+                android:lineSpacingMultiplier="1.1"
+                android:textColor="?android:textColorPrimary"
+                android:textIsSelectable="true"
+                android:textSize="?attr/status_text_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/status_content_warning_description"
+                tools:text="Status content. Can be pretty long. " />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/reply_divider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintTop_toBottomOf="@id/status_content"
+                app:layout_constraintBottom_toTopOf="@id/composeUsernameView"
+                android:importantForAccessibility="no"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/replyBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="reply_divider,replyLoadingError" />
+
+            <TextView
+                android:id="@+id/composeUsernameView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="?attr/status_text_medium"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:drawablePadding="10dp"
+                android:gravity="start|center"
+                app:layout_constraintTop_toBottomOf="@id/replyBarrier"
+                tools:text="Posting as @username@domain"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/composeContentWarningBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/composeUsernameView"
+                android:visibility="gone">
+
+                <androidx.emoji2.widget.EmojiEditText
+                    android:id="@+id/composeContentWarningField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/hint_content_warning"
+                    android:inputType="text|textCapSentences"
+                    android:lineSpacingMultiplier="1.1"
+                    android:maxLines="1"
+                    android:textSize="?attr/status_text_medium" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
+
+            <app.pachli.components.compose.view.EditTextTyped
+                android:id="@+id/composeEditField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/composeContentWarningBar"
+                app:layout_constraintStart_toStartOf="parent"
+                android:background="@null"
+                android:completionThreshold="2"
+                android:dropDownWidth="wrap_content"
+                android:hint="@string/hint_compose"
+                android:inputType="text|textMultiLine|textCapSentences"
+                android:minLines="3"
+                android:gravity="top"
+                android:lineSpacingMultiplier="1.1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textColorHint="?android:attr/textColorTertiary"
+                android:textSize="?attr/status_text_large" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/composeMediaPreviewBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/composeEditField"
+                android:scrollbars="none"
+                android:visibility="gone" />
+
+            <app.pachli.core.ui.PollPreviewView
+                android:id="@+id/pollPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/compose_media_preview_margin"
+                app:layout_constraintTop_toBottomOf="@id/composeMediaPreviewBar"
+                android:minWidth="@dimen/poll_preview_min_width"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/addMediaBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="12dp"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="52dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:paddingLeftSystemWindowInsets="true"
+        app:paddingTopSystemWindowInsets="true"
+        app:paddingRightSystemWindowInsets="true"
+        app:paddingBottomSystemWindowInsets="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <TextView
+            android:id="@+id/actionPhotoTake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:drawablePadding="8dp"
+            android:text="@string/action_photo_take" />
+
+        <TextView
+            android:id="@+id/action_add_media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:drawablePadding="8dp"
+            android:text="@string/action_add_media" />
+
+        <TextView
+            android:id="@+id/addPollTextActionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:drawablePadding="8dp"
+            android:text="@string/action_add_poll" />
+    </LinearLayout>
+
+    <app.pachli.core.ui.emoji.EmojiPickerView
+        android:id="@+id/emojiPickerBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="?attr/colorSurface"
+        android:elevation="12dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="52dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:behavior_skipCollapsed="true"
+        app:behavior_draggable="false"
+        app:paddingLeftSystemWindowInsets="true"
+        app:paddingRightSystemWindowInsets="true"
+        app:paddingBottomSystemWindowInsets="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+    <app.pachli.components.compose.view.ComposeOptionsView
+        android:id="@+id/composeOptionsBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="12dp"
+        android:paddingStart="24dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="52dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:paddingLeftSystemWindowInsets="true"
+        app:paddingTopSystemWindowInsets="true"
+        app:paddingRightSystemWindowInsets="true"
+        app:paddingBottomSystemWindowInsets="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+    <app.pachli.components.compose.view.QuotePolicyView
+        android:id="@+id/quotePolicyBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="12dp"
+        android:paddingStart="24dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="52dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:paddingLeftSystemWindowInsets="true"
+        app:paddingTopSystemWindowInsets="true"
+        app:paddingRightSystemWindowInsets="true"
+        app:paddingBottomSystemWindowInsets="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+    <app.pachli.components.compose.view.ComposeScheduleView
+        android:id="@+id/composeScheduleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="12dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="52dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:paddingLeftSystemWindowInsets="true"
+        app:paddingTopSystemWindowInsets="true"
+        app:paddingRightSystemWindowInsets="true"
+        app:paddingBottomSystemWindowInsets="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+    <LinearLayout
+        android:id="@+id/composeBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:animateLayoutChanges="true"
+        android:background="?attr/colorSurface"
+        android:elevation="12dp"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp">
+
+        <ImageButton
+            android:id="@+id/compose_add_attachment_button"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_add_media"
+            android:padding="4dp"
+            app:srcCompat="@drawable/ic_attach_file_24dp"
+            app:tooltipText="@string/action_add_media" />
+
+        <ImageButton
+            android:id="@+id/compose_change_visibility_button"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_toggle_visibility"
+            android:padding="4dp"
+            app:tint="?attr/colorPrimary"
+            app:tooltipText="@string/action_toggle_visibility"
+            tools:src="@drawable/ic_public_24dp" />
+
+        <ImageButton
+            android:id="@+id/compose_change_quote_policy_button"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_toggle_quote_policy"
+            android:padding="4dp"
+            app:tint="?attr/colorPrimary"
+            app:tooltipText="@string/action_toggle_quote_policy"
+            tools:src="@drawable/ic_public_24dp" />
+
+        <ImageButton
+            android:id="@+id/compose_mark_sensitive_button"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_hide_media"
+            android:padding="4dp"
+            app:tooltipText="@string/action_hide_media"
+            tools:src="@drawable/ic_eye_24dp" />
+
+        <ImageButton
+            android:id="@+id/composeContentWarningButton"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_content_warning"
+            android:padding="4dp"
+            app:srcCompat="@drawable/ic_cw_24dp"
+            app:tooltipText="@string/action_content_warning" />
+
+        <ImageButton
+            android:id="@+id/composeEmojiButton"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_emoji_keyboard"
+            android:padding="4dp"
+            app:srcCompat="@drawable/ic_emoji_24dp"
+            app:tooltipText="@string/action_emoji_keyboard" />
+
+        <ImageButton
+            android:id="@+id/composeScheduleButton"
+            style="@style/AppImageButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/action_schedule_post"
+            android:padding="4dp"
+            app:srcCompat="@drawable/ic_access_time"
+            app:tooltipText="@string/action_schedule_post" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/composeCharactersLeftView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:textColorTertiary"
+            android:textSize="?attr/status_text_medium"
+            android:textStyle="bold"
+            tools:text="500" />
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

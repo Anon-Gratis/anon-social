@@ -1,0 +1,5 @@
+Pachli 2.1.1
+
+Opravy:
+
+- Zabránenie pádu, ak je prítomný panel populárnych

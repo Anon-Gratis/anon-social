@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">白天</string>
+    <string name="app_theme_black">暗色</string>
+    <string name="app_theme_auto">自动切换</string>
+    <string name="app_theme_dark">黑夜</string>
+    <string name="app_theme_system">跟随系统设定</string>
+    <string name="pref_category_downloads">下载</string>
+    <string name="pref_title_downloads">下载地点</string>
+    <string name="download_location_downloads">缩略语</string>
+    <string name="download_location_per_account">缩略语</string>
+    <string name="download_location_per_sender">Per-sender 夹,下载夹</string>
+    <string name="pref_title_tab_tap">附件</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Jump to next page</string>
+    <string name="tab_tap_behaviour_jump_to_newest">缩略语</string>
+    <string name="pref_category_tabs">标签页</string>
+    <string name="pref_main_nav_position_option_top">专题</string>
+    <string name="pref_main_nav_position_option_bottom">底层</string>
+    <string name="pref_show_self_username_always">航道</string>
+    <string name="pref_show_self_username_disambiguate">当多个账户出现滞后时</string>
+    <string name="pref_show_self_username_never">永远</string>
+    <string name="pref_tab_alignment_end">案文方向的结束</string>
+    <string name="pref_title_tab_contents">主要导航表的内容</string>
+    <string name="pref_title_tab_alignment">主权主航标</string>
+    <string name="pref_tab_alignment_start">案文方向的开始</string>
+    <string name="pref_tab_alignment_justify_if_possible">1. 扩大至全额保险</string>
+    <string name="pref_tab_contents_icon_only">Icon</string>
+    <string name="pref_tab_contents_text_only">案文方向的结束</string>
+    <string name="pref_tab_contents_icon_text_inline">背 景</string>
+    <string name="pref_tab_contents_icon_text_below">内容提要</string>
+    <string name="pref_title_render_markdown">性别标记</string>
+    <string name="pref_update_notification_frequency_never">永远</string>
+    <string name="pref_update_notification_frequency_always">航道</string>
+    <string name="pref_default_audio_playback_option_unmuted">取消隐藏</string>
+    <string name="pref_default_audio_playback_option_muted">隐藏</string>
+    <string name="pref_underline_links_hashtags">话题</string>
+</resources>

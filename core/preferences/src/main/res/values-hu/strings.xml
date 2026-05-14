@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Világos</string>
+    <string name="app_theme_black">Fekete</string>
+    <string name="app_theme_auto">Automatikus naplementekor</string>
+    <string name="app_theme_dark">Sötét</string>
+    <string name="app_theme_system">Rendszer téma használata</string>
+    <string name="pref_category_downloads">Letöltések</string>
+    <string name="pref_title_downloads">Letöltések helye</string>
+    <string name="download_location_downloads">Letöltések mappa</string>
+    <string name="download_location_per_account">Per-account mappák, a Downloads mappában</string>
+    <string name="download_location_per_sender">Per-sender mappák, a Downloads mappában</string>
+    <string name="pref_title_tab_tap">Akció, ha megcsíp egy lapot</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Ugrás a következő oldalra</string>
+    <string name="tab_tap_behaviour_jump_to_newest">Ugrás a legújabb tartalomra</string>
+    <string name="pref_category_tabs">Fülek</string>
+    <string name="pref_main_nav_position_option_top">Fent</string>
+    <string name="pref_main_nav_position_option_bottom">Lent</string>
+    <string name="pref_show_self_username_always">Mindig</string>
+    <string name="pref_show_self_username_disambiguate">Ha több fiók is be van jelentkezve</string>
+    <string name="pref_show_self_username_never">Soha</string>
+    <string name="pref_title_tab_alignment">Align fő navigációs lapok</string>
+    <string name="pref_tab_alignment_start">Kezdőlap szöveg irány</string>
+    <string name="pref_tab_alignment_justify_if_possible">Bővítsd a teljes szélességet</string>
+    <string name="pref_title_tab_contents">A fő navigációs lapok tartalma</string>
+    <string name="pref_tab_contents_icon_text_inline">Icon a szöveg mellett</string>
+    <string name="pref_tab_alignment_end">A szöveg irányának vége</string>
+    <string name="pref_tab_contents_icon_text_below">Icon szöveg alább</string>
+    <string name="pref_tab_contents_icon_only">Csak ikon</string>
+    <string name="pref_tab_contents_text_only">Csak szöveg</string>
+    <string name="pref_title_render_markdown">Render Markdown</string>
+    <string name="pref_update_notification_frequency_never">Soha</string>
+    <string name="pref_update_notification_frequency_always">Mindig</string>
+    <string name="pref_title_export_settings">Haladó beállítások</string>
+    <string name="pref_title_import_settings">Beállítások importálása</string>
+    <string name="pref_default_audio_playback_option_unmuted">Némítás visszavonva.</string>
+    <string name="pref_default_audio_playback_option_muted">Némítva</string>
+    <string name="pref_title_translation">Fordítás</string>
+    <string name="pref_pronoun_display_everywhere">Mindenhol</string>
+    <string name="pref_underline_links_links">Külső hivatkozások</string>
+    <string name="pref_underline_links_hashtags">Hashtagek</string>
+</resources>

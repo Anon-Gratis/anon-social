@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">प्रकाश</string>
+    <string name="app_theme_black">Black</string>
+    <string name="app_theme_auto">सूर्यास्त के समय स्वचालित</string>
+    <string name="app_theme_dark">अंधकार</string>
+    <string name="app_theme_system">सिस्टम डिज़ाइन का उपयोग करें</string>
+    <string name="pref_category_downloads">डाउनलोड</string>
+    <string name="pref_title_downloads">डाउनलोड स्थान</string>
+    <string name="download_location_downloads">डाउनलोड फ़ोल्डर</string>
+    <string name="download_location_per_account">प्रति खाता फ़ोल्डर, डाउनलोड फ़ोल्डर में</string>
+    <string name="download_location_per_sender">प्रति प्रेषक फ़ोल्डर, डाउनलोड फ़ोल्डर में</string>
+    <string name="pref_title_tab_tap">एक टैब टैप करते समय कार्रवाई</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">अगले पृष्ठ पर जाएं</string>
+    <string name="tab_tap_behaviour_jump_to_newest">नवीनतम सामग्री पर जाएं</string>
+    <string name="pref_category_tabs">टैब्स</string>
+    <string name="pref_main_nav_position_option_top">ऊपर</string>
+    <string name="pref_main_nav_position_option_bottom">सबसे नीचे</string>
+    <string name="pref_show_self_username_always">हमेशा</string>
+    <string name="pref_show_self_username_never">कभी नहीं</string>
+    <string name="pref_show_self_username_disambiguate">जब एकाधिक खातों में लॉग इन</string>
+    <string name="pref_tab_alignment_justify_if_possible">पूर्ण चौड़ाई का विस्तार</string>
+    <string name="pref_tab_alignment_end">पाठ दिशा का अंत</string>
+    <string name="pref_title_tab_contents">मुख्य नेविगेशन टैब की सामग्री</string>
+    <string name="pref_tab_contents_text_only">केवल पाठ</string>
+    <string name="pref_tab_contents_icon_text_inline">पाठ के बगल में आइकन</string>
+    <string name="pref_tab_contents_icon_text_below">नीचे पाठ के साथ आइकन</string>
+    <string name="pref_title_tab_alignment">मुख्य नेविगेशन टैब को संरेखित करें</string>
+    <string name="pref_tab_alignment_start">पाठ दिशा शुरू</string>
+    <string name="pref_tab_contents_icon_only">केवल आइकन</string>
+    <string name="pref_title_render_markdown">रेंडर मार्कडाउन</string>
+    <string name="pref_update_notification_frequency_never">कभी नहीं</string>
+    <string name="pref_update_notification_frequency_always">हमेशा</string>
+    <string name="pref_default_audio_playback_option_unmuted">अनम्यूट</string>
+    <string name="pref_default_audio_playback_option_muted">मौन</string>
+    <string name="pref_title_translation">अनुवाद</string>
+    <string name="pref_title_export_settings">निर्यात सेटिंग्स</string>
+    <string name="pref_title_import_settings">सेटिंग्स आयात करें</string>
+    <string name="pref_underline_links_links">बाहरी कड़ियां</string>
+    <string name="pref_underline_links_hashtags">हैशटैग</string>
+</resources>

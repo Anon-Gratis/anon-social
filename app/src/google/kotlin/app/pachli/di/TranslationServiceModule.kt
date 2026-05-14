@@ -1,0 +1,46 @@
+/*
+ * Copyright 2025 Pachli Association
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.di
+
+import android.content.Context
+import app.pachli.core.data.repository.StatusDisplayOptionsRepository
+import app.pachli.core.network.retrofit.MastodonApi
+import app.pachli.core.preferences.SharedPreferencesRepository
+import app.pachli.languageidentification.LanguageIdentifier
+import app.pachli.translation.MlKitTranslationService
+import app.pachli.translation.TranslationService
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@InstallIn(SingletonComponent::class)
+@Module
+object TranslationServiceModule {
+    @Provides
+    @Singleton
+    fun providesTranslationService(
+        @ApplicationContext context: Context,
+        sharedPreferencesRepository: SharedPreferencesRepository,
+        languageIdentifierFactory: LanguageIdentifier.Factory,
+        mastodonApi: MastodonApi,
+        statusDisplayOptionsRepository: StatusDisplayOptionsRepository,
+    ): TranslationService = MlKitTranslationService(context, sharedPreferencesRepository, languageIdentifierFactory, mastodonApi, statusDisplayOptionsRepository)
+}

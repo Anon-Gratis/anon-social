@@ -1,0 +1,84 @@
+/*
+ * Copyright 2022 Tusky Contributors
+ *
+ * This file is a part of Pachli.
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with Pachli; if not,
+ * see <http://www.gnu.org/licenses>.
+ */
+
+package app.pachli.core.network
+
+import android.text.Html
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import androidx.core.text.parseAsHtml
+import app.pachli.core.common.string.trimTrailingWhitespace
+
+/**
+ * Matches the fallback `<X class="quote-inline">...</X>` added to statuses
+ * with an embedded quote for clients that don't display quotes (X may be any
+ * element, not just `p`. For example, Akkoma inserts a `span` element).
+ */
+val rxQuoteInline = "<(.+) class=\"quote-inline\".*?</\\1>\\s*".toRegex()
+
+/**
+ * Remove elements with a single `quote-inline` class.
+ */
+fun CharSequence.removeQuoteInline(): String {
+    return this.replace(rxQuoteInline, "")
+}
+
+interface PachliTagHandler : Html.TagHandler {
+    /**
+     * Called before parsing the HTML, allowing the tag handler to
+     * rewrite any of the HTML (e.g., renaming tags) before it is
+     * processed by the [Html.TagHandler].
+     */
+    fun rewriteHtml(html: CharSequence): String = html.toString()
+}
+
+/**
+ * Parses a String containing HTML from the Mastodon API to Spanned
+ */
+@JvmOverloads
+fun CharSequence.parseAsMastodonHtml(tagHandler: PachliTagHandler? = null): Spanned {
+    return (tagHandler?.rewriteHtml(this) ?: this.toString())
+        .parseAsHtml(tagHandler = tagHandler)
+        // Html.fromHtml returns trailing whitespace if the HTML ends in a </p> tag, which
+        // most status contents do, so it should be trimmed.
+        .trimTrailingWhitespace()
+}
+
+// See https://github.com/tuskyapp/Tusky/issues/563
+fun replaceCrashingCharacters(content: CharSequence): CharSequence? {
+    var replacing = false
+    var builder: SpannableStringBuilder? = null
+    val length = content.length
+    for (index in 0 until length) {
+        val character = content[index]
+
+        // If there are more than one or two, switch to a map
+        if (character == SOFT_HYPHEN) {
+            if (!replacing) {
+                replacing = true
+                builder = SpannableStringBuilder(content, 0, index)
+            }
+            builder!!.append(ASCII_HYPHEN)
+        } else if (replacing) {
+            builder!!.append(character)
+        }
+    }
+    return if (replacing) builder else content
+}
+
+private const val SOFT_HYPHEN = '\u00ad'
+private const val ASCII_HYPHEN = '-'

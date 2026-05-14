@@ -1,0 +1,5 @@
+Pachli 2.5.1
+
+Opravy:
+
+- Povoliť iba dostupné akcie na upozornenie pripojené k stavu

@@ -1,0 +1,16 @@
+Pachli 2.5.0
+
+Nuevas características:
+
+- Transiciones más suaves en la interfaz de usuario
+- Incluir los certificados de Let's Encrypt
+- Solicitar más publicaciones, enlaces y etiquetas de tendencia
+- Ahora es más fácil añadir y quitar las cronologías en las pestañas
+- Actualizar las traducciones al finlandés, cabilio y español
+
+Correcciones:
+
+- Habilitar las acciones de Talkback en las notificaciones y conversaciones
+- Mejoras en las transiciones a y desde el reproductor de video
+- Actualizar PageCache para que sea compatible con la organización no cronológica
+- Permitir que la fecha de caducidad de los filtros sea "indefinido"

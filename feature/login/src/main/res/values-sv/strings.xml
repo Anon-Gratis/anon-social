@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_whats_an_instance">Adressen eller domänen för vilken instans som helst kan anges här, till exempel mastodon.social, icosahedron.website, social.tchncs.de och \u0020<a href="https://instances.social"> mer! </a>\n\nEn instans är en plats där ditt konto finns, men du kan enkelt kommunicera med och följa personer på andra instanser, som om ni var på samma sajt.\n\nMer information finns på <a href="https://joinmastodon.org">joinmastodon.org</a>.</string>
+    <string name="action_close">Stäng</string>
+    <string name="action_browser_login">Inloggning via webbläsaren</string>
+    <string name="error_invalid_domain">Ogiltig domän angiven</string>
+    <string name="error_failed_app_registration_fmt">Misslyckades att autentisera med den instansen. Om detta kvarstår, försök Logga in i webbläsaren från menyn: %1$s</string>
+    <string name="error_authorization_unknown">Ett oidentifierat auktoriseringsfel inträffade. Om detta kvarstår, försök Logga in i webbläsaren från menyn.</string>
+    <string name="error_authorization_denied">Auktorisering nekades. Om du är säker på att du har angett rätt referenser, prova Logga in i webbläsaren från menyn.</string>
+    <string name="error_retrieving_oauth_token_fmt">Misslyckades med att hämta en inloggningstoken. Om detta kvarstår, försök Logga in i webbläsaren från menyn: %1$s</string>
+    <string name="error_loading_account_details_fmt">Kunde inte ladda kontodetaljer: %1$s</string>
+    <string name="hint_domain">Vilken instans?</string>
+    <string name="action_login">Logga in med Pachli</string>
+    <string name="link_whats_an_instance">Vad är en instans?</string>
+    <string name="login_connection">Ansluter…</string>
+    <string name="title_login">Logga in</string>
+    <string name="error_could_not_load_login_page">Kunde inte ladda inloggningssidan.</string>
+    <string name="instance_rule_info">Genom att logga in accepterar du reglerna på %1$s.</string>
+    <string name="instance_rule_title">%1$s regler</string>
+</resources>

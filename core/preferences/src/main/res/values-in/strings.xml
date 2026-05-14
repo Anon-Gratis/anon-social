@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Terang</string>
+    <string name="app_theme_black">Hitam</string>
+    <string name="app_theme_dark">Gelap</string>
+    <string name="app_theme_auto">Otomatis saat matahari terbenam</string>
+    <string name="download_location_downloads">Download folder</string>
+    <string name="download_location_per_account">Folder Per-account, di folder Unduhan</string>
+    <string name="app_theme_system">Gunakan desain sistem</string>
+    <string name="pref_category_downloads">Unduhan</string>
+    <string name="pref_title_downloads">Tempat unduhan</string>
+    <string name="download_location_per_sender">Folder Per-sender, di folder Unduhan</string>
+    <string name="pref_title_tab_tap">Tindakan ketika mengetuk tab</string>
+    <string name="tab_tap_behaviour_jump_to_newest">Langsung ke konten terbaru</string>
+    <string name="pref_category_tabs">Tab</string>
+    <string name="pref_main_nav_position_option_top">Atas</string>
+    <string name="pref_main_nav_position_option_bottom">Bawah</string>
+    <string name="pref_show_self_username_always">Selalu</string>
+    <string name="pref_show_self_username_never">Jangan Pernah</string>
+    <string name="pref_show_self_username_disambiguate">Ketika beberapa akun masuk</string>
+    <string name="pref_tab_alignment_start">Mulai dari arah teks</string>
+    <string name="pref_tab_alignment_justify_if_possible">Perluas lebar penuh</string>
+    <string name="pref_tab_alignment_end">Akhir arah teks</string>
+    <string name="pref_title_tab_contents">Konten tab navigasi utama</string>
+    <string name="pref_title_tab_alignment">Align tab navigasi utama</string>
+    <string name="pref_tab_contents_icon_only">Hanya Ikon</string>
+    <string name="pref_tab_contents_text_only">Hanya teks</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">Jump to next page</string>
+    <string name="pref_update_notification_frequency_never">Jangan pernah</string>
+    <string name="pref_tab_contents_icon_text_inline">Login</string>
+    <string name="pref_tab_contents_icon_text_below">Login</string>
+    <string name="pref_update_notification_frequency_always">Selalu</string>
+    <string name="pref_title_export_settings">Ekspor pengaturan aplikasi</string>
+    <string name="pref_title_import_settings">Impor Pengaturan</string>
+    <string name="pref_default_audio_playback_option_unmuted">Mikrofon berhasil dinyalakan.</string>
+    <string name="pref_default_audio_playback_option_muted">Bisu</string>
+    <string name="pref_title_translation">Terjemahan</string>
+    <string name="pref_pronoun_display_everywhere">Di mana pun</string>
+    <string name="pref_quote_policy_followers">salah satu pengikut kamu</string>
+    <string name="pref_summary_quote_policy_disabled">Server Anda tidak mendukung filter konten</string>
+    <string name="pref_underline_links_links">Tautan eksternal</string>
+    <string name="pref_underline_links_hashtags">Hashtag</string>
+</resources>

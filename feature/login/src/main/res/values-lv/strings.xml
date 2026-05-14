@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_whats_an_instance">Šeit var ievadīt jebkura servera adresi vai domēnu, piemēram, mastodon.social, icosahedron.website, social.tchncs.de un <a href="https://instances.social">citus.</a> \n\nServeris ir vieta, kur tiek mitināts Tavs konts, taču Tu vari viegli sazināties ar cilvēkiem un sekot tiem citos serveros tā, it kā jūs būtu tajā pašā vietnē. \n\nVairāk informācijas var atrast <a href="https://joinmastodon.org">joinmastodon.org</a>.</string>
+    <string name="action_close">Aizvērt</string>
+    <string name="action_browser_login">Pieteikties ar pārlūku</string>
+    <string name="error_invalid_domain">Ievadīts nederīgs domēns</string>
+    <string name="error_failed_app_registration_fmt">Autentificēšana ar šo serveri neizdevās: %1$s</string>
+    <string name="error_authorization_unknown">Radās nenoteikta autorizēšanās kļūda. Ja tas atkārtojas, izvēlnē jāmēģina \"Pieteikties pārlūkā\".</string>
+    <string name="error_authorization_denied">Autorizēšanās tika liegta. Ja ir pārliecība, ka ievadīti pareizi pieteikšanās dati, izvēlnē jāmēģina \"Pieteikties pārlūkā\".</string>
+    <string name="error_retrieving_oauth_token_fmt">Neizdevās iegūt pieteikšanās pilnvaru. Ja tas atkārtojas, izvēlnē jāmēģina \"Pieteikties pārlūkā\": %1$s</string>
+    <string name="error_loading_account_details_fmt">Konta datu ielādēšana neizdevās: %1$s</string>
+    <string name="hint_domain">Kurš serveris?</string>
+    <string name="action_login">Pieteikties ar Pachli</string>
+    <string name="link_whats_an_instance">Kas ir serveris?</string>
+    <string name="login_connection">Savienojas…</string>
+    <string name="title_login">Pieteikties</string>
+    <string name="error_could_not_load_login_page">Nevarēja ielādēt pieteikšanās lapu.</string>
+    <string name="instance_rule_info">Piesakoties Tu piekrīti %1$s noteikumiem.</string>
+    <string name="instance_rule_title">%1$s noteikumi</string>
+</resources>

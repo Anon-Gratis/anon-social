@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">Ljocht</string>
+    <string name="app_theme_black">Swart</string>
+    <string name="app_theme_auto">Automatysk as de sinne ûnder giet</string>
+    <string name="app_theme_dark">Tsjuster</string>
+    <string name="app_theme_system">Systeem Opmaak Brûke</string>
+    <string name="pref_category_downloads">Delhelje</string>
+    <string name="pref_category_tabs">Ljepblêden</string>
+    <string name="pref_main_nav_position_option_top">Boppe</string>
+    <string name="pref_main_nav_position_option_bottom">Ûnder</string>
+    <string name="pref_show_self_username_always">Altyd</string>
+    <string name="pref_show_self_username_never">Nea</string>
+    <string name="pref_update_notification_frequency_never">Nea</string>
+    <string name="pref_update_notification_frequency_always">Altyd</string>
+    <string name="pref_default_audio_playback_option_unmuted">Net mear negearre</string>
+    <string name="pref_title_translation">Oersetting</string>
+    <string name="pref_pronoun_display_everywhere">Oeral</string>
+    <string name="pref_default_audio_playback_option_muted">Mute</string>
+    <string name="pref_underline_links_hashtags">Hashtags</string>
+</resources>

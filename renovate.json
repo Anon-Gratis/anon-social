@@ -1,0 +1,16 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:best-practices"
+    ],
+    "packageRules": [
+        {
+            "groupName": "Kotlin",
+            "groupSlug": "kotlin",
+            "matchPackageNames": [
+                "com.google.devtools.ksp{/,}**",
+                "/org.jetbrains.kotlin.*/"
+            ]
+        }
+    ]
+}

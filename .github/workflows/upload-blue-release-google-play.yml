@@ -1,0 +1,85 @@
+name: Upload blueRelease to Google Play
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - uses: ./.github/actions/setup-build-env
+        with:
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Build GitHub APK
+        run: ./gradlew assembleBlueGithubRelease --stacktrace
+
+      - name: Build Google AAB
+        run: ./gradlew :app:bundleBlueGoogleRelease --stacktrace
+
+      - uses: r0adkll/sign-android-release@dbeba6b98a60b0fd540c02443c7f428cdedf0e7f # v1.0.4
+        name: Sign GitHub APK
+        id: sign_app_apk
+        with:
+          releaseDirectory: app/build/outputs/apk/blueGithub/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - uses: r0adkll/sign-android-release@dbeba6b98a60b0fd540c02443c7f428cdedf0e7f # v1.0.4
+        name: Sign Google AAB
+        id: sign_app_aab
+        with:
+          releaseDirectory: app/build/outputs/bundle/blueGoogleRelease
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - name: Upload APK Release Asset
+        id: upload-release-asset-apk
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: app-release.apk
+          path: ${{steps.sign_app_apk.outputs.signedReleaseFile}}
+
+      - name: Upload AAB Release Asset
+        id: upload-release-asset-aab
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: app-release.aab
+          path: ${{steps.sign_app_aab.outputs.signedReleaseFile}}
+
+      - name: Upload mapping file
+        id: upload-mapping
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: mapping.txt
+          path: app/build/outputs/mapping/blueGoogleRelease/mapping.txt
+
+      - name: Generate whatsnew
+        id: generate-whatsnew
+        run: |
+          mkdir -p googleplay/whatsnew
+          cp $(find fastlane/metadata/android/en-US/changelogs | sort -n -k6 -t/ | tail -n 1) googleplay/whatsnew/whatsnew-en-US
+
+      - name: Upload AAB to Google Play
+        id: upload-release-asset-aab-play
+        uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb # v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_KEY }}
+          packageName: app.pachli
+          releaseFiles: ${{steps.sign_app_aab.outputs.signedReleaseFile}}
+          track: internal
+          whatsNewDirectory: googleplay/whatsnew
+          status: completed
+          mappingFile: app/build/outputs/mapping/blueGoogleRelease/mapping.txt

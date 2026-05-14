@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">สว่าง</string>
+    <string name="app_theme_black">ดำ</string>
+    <string name="app_theme_auto">ปรับตามเวลา</string>
+    <string name="app_theme_dark">มืด</string>
+    <string name="app_theme_system">ใช้ตามแบบระบบ</string>
+    <string name="pref_category_downloads">ดาวน์โหลด</string>
+    <string name="pref_title_downloads">ตําแหน่งที่ดาวน์โหลด</string>
+    <string name="download_location_downloads">ดาวน์โหลดโฟลเดอร์</string>
+    <string name="download_location_per_account">โฟลเดอร์บัญชี, ดาวน์โหลดในโฟลเดอร์</string>
+    <string name="download_location_per_sender">โฟลเดอร์ของโฟลเดอร์ดาวน์โหลดในโฟลเดอร์</string>
+    <string name="pref_title_tab_tap">การกระทําเมื่อแตะแท็บ</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">ขี่หน้าถัดไป</string>
+    <string name="tab_tap_behaviour_jump_to_newest">ขี่เนื้อหาล่าสุด</string>
+    <string name="pref_category_tabs">แท็บ</string>
+    <string name="pref_main_nav_position_option_top">บน</string>
+    <string name="pref_main_nav_position_option_bottom">ล่าง</string>
+    <string name="pref_show_self_username_always">เสมอ</string>
+    <string name="pref_show_self_username_never">ไม่เคย</string>
+    <string name="pref_show_self_username_disambiguate">เมื่อบัญชีหลายบัญชี</string>
+    <string name="pref_title_tab_alignment">การกําหนดช่องนําทางหลัก</string>
+    <string name="pref_tab_alignment_start">เริ่มต้นทิศทางข้อความ</string>
+    <string name="pref_tab_alignment_justify_if_possible">ขยายความกว้างเต็ม</string>
+    <string name="pref_tab_alignment_end">สิ้นสุดทิศทางข้อความ</string>
+    <string name="pref_title_tab_contents">เนื้อหาหลักของแท็บนําทาง</string>
+    <string name="pref_tab_contents_icon_text_inline">ไอคอนที่มีข้อความ</string>
+    <string name="pref_tab_contents_icon_text_below">ไอคอนที่มีข้อความด้านล่าง</string>
+    <string name="pref_tab_contents_icon_only">ไอคอนเท่านั้น</string>
+    <string name="pref_tab_contents_text_only">ข้อความเท่านั้น</string>
+    <string name="pref_update_notification_frequency_never">ไม่เคย</string>
+    <string name="pref_update_notification_frequency_always">เสมอ</string>
+    <string name="pref_title_export_settings">ส่งออกการตั้งค่าของแอป</string>
+    <string name="pref_title_import_settings">นำเข้าการตั้งค่า</string>
+    <string name="pref_default_audio_playback_option_unmuted">เปิดเสียง</string>
+    <string name="pref_default_audio_playback_option_muted">ปิดเสียงอยู่</string>
+    <string name="pref_title_translation">การแปล</string>
+    <string name="pref_pronoun_display_everywhere">ทุกที่</string>
+    <string name="pref_quote_policy_followers">หนึ่งในผู้ติดตามของคุณ</string>
+    <string name="pref_translation_backend_option_server_only">เซิร์ฟเวอร์ออนไลน์</string>
+    <string name="pref_underline_links_hashtags">แฮชแท็ก</string>
+</resources>

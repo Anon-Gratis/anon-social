@@ -1,0 +1,264 @@
+package app.pachli.components.viewthread.edits
+
+import android.content.Context
+import android.graphics.Typeface
+import android.text.Editable
+import android.text.TextPaint
+import android.text.style.CharacterStyle
+import android.text.style.MetricAffectingSpan
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import app.pachli.R
+import app.pachli.core.common.extensions.hide
+import app.pachli.core.common.extensions.show
+import app.pachli.core.common.extensions.visible
+import app.pachli.core.common.util.AbsoluteTimeFormatter
+import app.pachli.core.designsystem.R as DR
+import app.pachli.core.model.AttachmentDisplayAction
+import app.pachli.core.model.StatusEdit
+import app.pachli.core.network.PachliTagHandler
+import app.pachli.core.network.parseAsMastodonHtml
+import app.pachli.core.preferences.LinksToUnderline
+import app.pachli.core.ui.BindingHolder
+import app.pachli.core.ui.LinkListener
+import app.pachli.core.ui.PollAdapter
+import app.pachli.core.ui.PollAdapter.DisplayMode
+import app.pachli.core.ui.PollOptionViewData
+import app.pachli.core.ui.SetContentAsMastodonHtml
+import app.pachli.core.ui.emojify
+import app.pachli.core.ui.taghandler.Mark
+import app.pachli.core.ui.taghandler.appendMark
+import app.pachli.core.ui.taghandler.setSpansFromMark
+import app.pachli.databinding.ItemStatusEditBinding
+import com.bumptech.glide.RequestManager
+import org.xml.sax.XMLReader
+
+class ViewEditsAdapter(
+    context: Context,
+    private val glide: RequestManager,
+    private val edits: List<StatusEdit>,
+    private val animateEmojis: Boolean,
+    private val useBlurhash: Boolean,
+    private val linksToUnderline: Set<LinksToUnderline>,
+    private val listener: LinkListener,
+) : RecyclerView.Adapter<BindingHolder<ItemStatusEditBinding>>() {
+
+    private val absoluteTimeFormatter = AbsoluteTimeFormatter()
+
+    /** Size of large text in this theme, in px */
+    private var largeTextSizePx: Float = 0f
+
+    /** Size of medium text in this theme, in px */
+    private var mediumTextSizePx: Float = 0f
+
+    private val viewEditsTagHandler = ViewEditsTagHandler(context)
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): BindingHolder<ItemStatusEditBinding> {
+        val binding = ItemStatusEditBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        binding.statusEditMediaPreview.clipToOutline = true
+
+        val typedValue = TypedValue()
+        val context = binding.root.context
+        val displayMetrics = context.resources.displayMetrics
+        context.theme.resolveAttribute(DR.attr.status_text_large, typedValue, true)
+        largeTextSizePx = typedValue.getDimension(displayMetrics)
+        context.theme.resolveAttribute(DR.attr.status_text_medium, typedValue, true)
+        mediumTextSizePx = typedValue.getDimension(displayMetrics)
+
+        return BindingHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: BindingHolder<ItemStatusEditBinding>, position: Int) {
+        val edit = edits[position]
+
+        val binding = holder.binding
+
+        val context = binding.root.context
+
+        val infoStringRes = if (position == edits.lastIndex) {
+            R.string.status_created_info
+        } else {
+            R.string.status_edit_info
+        }
+
+        // Show the most recent version of the status using large text to make it clearer for
+        // the user, and for similarity with thread view.
+        val variableTextSize = if (position == edits.lastIndex) {
+            mediumTextSizePx
+        } else {
+            largeTextSizePx
+        }
+        binding.statusEditContentWarningDescription.setTextSize(TypedValue.COMPLEX_UNIT_PX, variableTextSize)
+        binding.statusEditContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, variableTextSize)
+        binding.statusEditMediaSensitivity.setTextSize(TypedValue.COMPLEX_UNIT_PX, variableTextSize)
+
+        val timestamp = absoluteTimeFormatter.format(edit.createdAt, false)
+
+        binding.statusEditInfo.text = context.getString(infoStringRes, timestamp)
+
+        if (edit.spoilerText.removePrefix("<div></div>").removePrefix("<div/>").isEmpty()) {
+            binding.statusEditContentWarningDescription.hide()
+            binding.statusEditContentWarningSeparator.hide()
+        } else {
+            binding.statusEditContentWarningDescription.show()
+            binding.statusEditContentWarningSeparator.show()
+            binding.statusEditContentWarningDescription.text = edit.spoilerText
+                .parseAsMastodonHtml(viewEditsTagHandler)
+                .emojify(
+                    glide,
+                    edit.emojis,
+                    binding.statusEditContentWarningDescription,
+                    animateEmojis,
+                )
+        }
+
+        SetContentAsMastodonHtml.invoke(
+            glide,
+            textView = binding.statusEditContent,
+            content = edit.content,
+            emojis = edit.emojis,
+            animateEmojis = animateEmojis,
+            removeQuoteInline = false,
+            linksToUnderline = linksToUnderline,
+            tagHandler = viewEditsTagHandler,
+            linkListener = listener,
+        )
+
+        val poll = edit.poll
+        if (poll == null) {
+            binding.statusEditPollOptions.hide()
+            binding.statusEditPollDescription.hide()
+        } else {
+            binding.statusEditPollOptions.show()
+
+            // not used for now since not reported by the api
+            // https://github.com/mastodon/mastodon/issues/22571
+            // binding.statusEditPollDescription.show()
+
+            val pollAdapter = PollAdapter(
+                glide,
+                options = poll.options.map { PollOptionViewData.from(it) },
+                votesCount = 0,
+                votersCount = null,
+                edit.emojis,
+                animateEmojis = animateEmojis,
+                displayMode = DisplayMode.EDIT_HISTORY,
+                enabled = false,
+                textSize = mediumTextSizePx,
+                resultClickListener = null,
+                pollOptionClickListener = null,
+            )
+
+            binding.statusEditPollOptions.adapter = pollAdapter
+            binding.statusEditPollOptions.layoutManager = LinearLayoutManager(context)
+        }
+
+        if (edit.mediaAttachments.isEmpty()) {
+            binding.statusEditMediaPreview.hide()
+            binding.statusEditMediaSensitivity.hide()
+        } else {
+            binding.statusEditMediaPreview.show()
+            // TODO: Passing `Show` here for `displayAction` might not be correct. Would be
+            // better to figure this out from the filter context of whatever activity or
+            // fragment contained the status we're viewing the edits for.
+            binding.statusEditMediaPreview.bind(
+                glide,
+                edit.mediaAttachments,
+                AttachmentDisplayAction.Show(),
+                useBlurhash,
+            )
+            binding.statusEditMediaSensitivity.visible(edit.sensitive)
+        }
+    }
+
+    override fun getItemCount() = edits.size
+}
+
+/**
+ * Handle XML tags created by [ViewEditsViewModel] and create custom spans to display inserted or
+ * deleted text.
+ */
+class ViewEditsTagHandler(val context: Context) : PachliTagHandler {
+    /** Object to mark the start of a span of deleted text */
+    object Del : Mark
+
+    /** Object to mark the start of a span of inserted text */
+    object Ins : Mark
+
+    override fun handleTag(opening: Boolean, tag: String, output: Editable, xmlReader: XMLReader) {
+        when (tag) {
+            DELETED_TEXT_EL -> {
+                if (opening) {
+                    output.appendMark(Del)
+                } else {
+                    output.setSpansFromMark(Del, DeletedTextSpan(context))
+                }
+            }
+            INSERTED_TEXT_EL -> {
+                if (opening) {
+                    output.appendMark(Ins)
+                } else {
+                    output.setSpansFromMark(Ins, InsertedTextSpan(context))
+                }
+            }
+        }
+    }
+
+    /** Span that signifies deleted text */
+    class DeletedTextSpan(context: Context) : CharacterStyle() {
+        private var bgColor: Int
+
+        init {
+            bgColor = context.getColor(DR.color.view_edits_background_delete)
+        }
+
+        override fun updateDrawState(tp: TextPaint) {
+            tp.bgColor = bgColor
+            tp.isStrikeThruText = true
+        }
+    }
+
+    /**
+     *  Span that signifies inserted text.
+     *
+     *  Derives from [MetricAffectingSpan] as making the font bold can change
+     *  its metrics.
+     */
+    class InsertedTextSpan(context: Context) : MetricAffectingSpan() {
+        private var bgColor: Int
+
+        init {
+            bgColor = context.getColor(DR.color.view_edits_background_insert)
+        }
+
+        override fun updateDrawState(tp: TextPaint) {
+            updateMeasureState(tp)
+            tp.bgColor = bgColor
+        }
+
+        override fun updateMeasureState(tp: TextPaint) {
+            // Try and create a bold version of the active font to preserve
+            // the user's custom font selection.
+            tp.typeface = Typeface.create(tp.typeface, Typeface.BOLD)
+        }
+    }
+
+    companion object {
+        /** XML element to represent text that has been deleted */
+        // Can't be an element that Android's HTML parser recognises, otherwise the tagHandler
+        // won't be called for it.
+        const val DELETED_TEXT_EL = "pachli-del"
+
+        /** XML element to represent text that has been inserted */
+        // Can't be an element that Android's HTML parser recognises, otherwise the tagHandler
+        // won't be called for it.
+        const val INSERTED_TEXT_EL = "pachli-ins"
+    }
+}

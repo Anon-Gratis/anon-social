@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_theme_light">亮色</string>
+    <string name="app_theme_black">黑色</string>
+    <string name="app_theme_auto">自动切换</string>
+    <string name="app_theme_dark">暗色</string>
+    <string name="app_theme_system">跟随系统设定</string>
+    <string name="pref_category_downloads">下载</string>
+    <string name="pref_title_downloads">下载位置</string>
+    <string name="download_location_downloads">下载文件夹</string>
+    <string name="download_location_per_account">每个帐户的文件夹，在下载文件夹中</string>
+    <string name="pref_category_tabs">标签页</string>
+    <string name="tab_tap_behaviour_jump_to_next_page">跳转至下一页</string>
+    <string name="tab_tap_behaviour_jump_to_newest">跳转至最新内容</string>
+    <string name="download_location_per_sender">每个发件人文件夹，在下载文件夹中</string>
+    <string name="pref_title_tab_tap">点击选项卡时的操作</string>
+    <string name="pref_main_nav_position_option_top">顶部</string>
+    <string name="pref_main_nav_position_option_bottom">底部</string>
+    <string name="pref_show_self_username_always">始终</string>
+    <string name="pref_show_self_username_disambiguate">登录多个账户时</string>
+    <string name="pref_show_self_username_never">从不</string>
+    <string name="pref_title_tab_alignment">主导航栏选项卡对齐方式</string>
+    <string name="pref_tab_alignment_start">文本起始方向</string>
+    <string name="pref_tab_alignment_justify_if_possible">扩展至最大宽度</string>
+    <string name="pref_tab_alignment_end">文本结束方向</string>
+    <string name="pref_title_tab_contents">主导航栏的内容</string>
+    <string name="pref_tab_contents_icon_text_inline">文字在图标右侧</string>
+    <string name="pref_tab_contents_icon_text_below">文字在图标下方</string>
+    <string name="pref_tab_contents_icon_only">仅图标</string>
+    <string name="pref_tab_contents_text_only">纯文本</string>
+    <string name="pref_title_render_markdown">渲染 Markdown</string>
+    <string name="pref_update_notification_frequency_once_per_version">每版本仅一次</string>
+    <string name="pref_update_notification_frequency_never">从不</string>
+    <string name="pref_update_notification_frequency_always">总是</string>
+    <string name="pref_title_export_settings">导出设置</string>
+    <string name="pref_summary_export_settings">点击以将应用和帐户设置保存到本地文件</string>
+    <string name="pref_title_import_settings">导入设置</string>
+    <string name="pref_summary_import_settings">点击以从使用“导出设置”创建的文件中恢复设置</string>
+    <string name="pref_default_audio_playback_option_unmuted">解除静音</string>
+    <string name="pref_default_audio_playback_option_muted">静音</string>
+    <string name="pref_title_translation">翻译</string>
+    <string name="pref_pronoun_display_everywhere">到处</string>
+    <string name="pref_quote_policy_followers">你的其中的一个关注者</string>
+    <string name="pref_summary_quote_policy_disabled">您的服务器不支持内容过滤器</string>
+    <string name="pref_underline_links_links">外部链接</string>
+    <string name="pref_underline_links_hashtags">标签</string>
+</resources>

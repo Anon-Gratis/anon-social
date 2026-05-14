@@ -1,0 +1,54 @@
+root = true
+
+[*]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{java,kt}]
+ktlint_code_style = android_studio
+
+ij_kotlin_imports_layout = *
+
+# Disable wildcard imports
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+ij_java_class_count_to_use_import_on_demand = 999
+
+# Require trailing comma
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# https://pinterest.github.io/ktlint/latest/rules/standard/#class-signature
+# Was re-writing class signatures causing spurious diffs.
+ktlint_standard_class-signature = disabled
+
+# https://pinterest.github.io/ktlint/latest/rules/standard/#condition-wrapping
+# Was re-writing conditions causing spurious diffs.
+ktlint-standard_condition-wrapping = disabled
+
+# https://pinterest.github.io/ktlint/latest/rules/standard/#function-expression-body
+# Was re-writing functions to expression bodies, causing spurious diffs.
+ktlint_standard_function-expression-body = disabled
+
+# https://pinterest.github.io/ktlint/latest/rules/standard/#blank-line-between-when-conditions
+# Causes too many whitespace changes at the moment.
+ktlint_standard_blank-line-between-when-conditions = disabled
+
+max_line_length = off
+
+ktlint_standard_function-signature = disabled
+
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+compose_allowed_composition_locals = LocalPreferences
+
+[*.{yml,yaml}]
+indent_size = 2
+
+# Disable ktlint on generated source code, see
+# https://github.com/JLLeitschuh/ktlint-gradle/issues/746
+[**/build/generated/**]
+ktlint = disabled
