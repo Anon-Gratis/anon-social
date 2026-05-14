@@ -89,7 +89,15 @@ object NetworkModule {
         val httpServer = preferences.httpProxyServer ?: ""
         val httpPort = preferences.httpProxyPort
         val cacheSize = 25 * 1024 * 1024L // 25 MiB
+        // Anon Social: always route through the embedded Tor SOCKS5 proxy
+        // bound by TorBridge. The .onion / clearnet hostname resolves inside
+        // the Tor circuit so the device's resolver never sees it.
+        val torProxy = Proxy(
+            Proxy.Type.SOCKS,
+            InetSocketAddress("127.0.0.1", 9050),
+        )
         val builder = OkHttpClient.Builder()
+            .proxy(torProxy)
             .addInterceptor { chain ->
                 /**
                  * Add a custom User-Agent that contains Pachli, Android and OkHttp Version to all requests

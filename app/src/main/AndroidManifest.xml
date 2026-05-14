@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <!-- Anon Social — biometric unlock (optional shortcut on top of PIN). -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
     <application
         android:name=".PachliApplication"
         android:appCategory="social"
@@ -217,6 +220,21 @@
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
+
+        <!-- Anon Social app-lock activities. singleTop (NOT singleTask) so
+             LockActivity reuses an existing instance and stays in the calling
+             activity's task; singleTask would break the unlock-by-finish() flow. -->
+        <activity
+            android:name="app.pachli.anonsocial.LockActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name="app.pachli.anonsocial.SecurityActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
 
     </application>
 </manifest>

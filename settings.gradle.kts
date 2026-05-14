@@ -25,6 +25,9 @@ dependencyResolutionManagement {
         }
         mavenCentral()
         maven("https://jitpack.io")
+        // Guardian Project — tor-android + jtorctl for embedded Tor (same lib
+        // we ship in Anon Mail / Mumble / WhistleBlower).
+        maven("https://raw.githubusercontent.com/guardianproject/gpmaven/master")
     }
 }
 

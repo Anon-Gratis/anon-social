@@ -800,4 +800,9 @@
     <string name="compose_task_description_writing_post">Writing post</string>
     <string name="compose_task_description_replying_fmt">Replying to %1$s</string>
     <string name="compose_task_description_quoting_fmt">Quoting %1$s</string>
+
+    <!-- Anon Social — app lock entry point in the preferences screen -->
+    <string name="anon_pref_category_security">// SECURITY</string>
+    <string name="anon_pref_title_app_lock">App lock + PANIC wipe</string>
+    <string name="anon_pref_summary_app_lock">PIN + optional biometric · screenshots blocked · nuclear wipe</string>
 </resources>

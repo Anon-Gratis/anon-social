@@ -88,6 +88,34 @@ class PachliApplication : Application() {
 
         Security.insertProviderAt(Conscrypt.newProvider(), 1)
 
+        // Anon Social — start embedded Tor immediately so NetworkModule's
+        // OkHttp routes through 127.0.0.1:9050 SOCKS5 by the time the first
+        // network call happens. The bindService is deferred 2s internally to
+        // avoid racing the rest of app boot.
+        app.pachli.anonsocial.TorBridge.start(this)
+
+        // App-lock wiring (matches Anon PGP 0.3.6 / Anon Mail 0.8.5):
+        //   - If a PIN is configured, the first activity gates to LockActivity.
+        //   - Background→foreground transitions check the 60s grace + re-lock.
+        //   - FLAG_SECURE is applied to every activity at creation regardless of
+        //     lock state, so Recent Apps + screenshots are always blocked.
+        if (app.pachli.anonsocial.PinStore(this).hasPin()) {
+            app.pachli.anonsocial.AppLock.lockOnProcessStart()
+        }
+        androidx.lifecycle.ProcessLifecycleOwner.get().lifecycle.addObserver(
+            object : androidx.lifecycle.DefaultLifecycleObserver {
+                override fun onStop(owner: androidx.lifecycle.LifecycleOwner) {
+                    app.pachli.anonsocial.AppLock.onAppBackgrounded()
+                }
+                override fun onStart(owner: androidx.lifecycle.LifecycleOwner) {
+                    app.pachli.anonsocial.AppLock.onAppForegrounded(
+                        app.pachli.anonsocial.PinStore(this@PachliApplication).hasPin(),
+                    )
+                }
+            },
+        )
+        registerActivityLifecycleCallbacks(app.pachli.anonsocial.AppLockGate(this))
+
         when {
             BuildConfig.DEBUG -> Timber.plant(Timber.DebugTree())
             BuildConfig.FLAVOR_color == "orange" -> Timber.plant(TreeRing)

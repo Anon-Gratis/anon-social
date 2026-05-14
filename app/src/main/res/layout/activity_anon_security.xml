@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FF000000">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF050505"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="// SECURITY"
+            android:textColor="#FFFFFFFF"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.08"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="App lock · biometrics · screenshot policy"
+            android:textColor="#FF888888"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.08"
+            android:textSize="11sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="// APP LOCK"
+                android:textColor="#FFFFFFFF"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="A PIN gates this app on launch and after backgrounding. Biometric is an optional shortcut — PIN is always the fallback. No PIN recovery: forget it and you must clear app data."
+                android:textColor="#FF888888"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:lineSpacingExtra="2dp"
+                android:layout_marginBottom="16dp" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/anon_enableLockSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enable app lock"
+                android:textColor="#FFFFFFFF"
+                android:fontFamily="monospace"
+                android:textSize="14sp"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/anon_changePinBtn"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[ CHANGE PIN ]"
+                android:fontFamily="monospace"
+                android:textColor="#FFFFFFFF"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/anon_biometricSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Biometric unlock"
+                android:textColor="#FFFFFFFF"
+                android:fontFamily="monospace"
+                android:textSize="14sp"
+                android:padding="8dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/anon_biometricHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#FF888888"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="// PRIVACY"
+                android:textColor="#FFFFFFFF"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:textSize="14sp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Screenshots + the Recent Apps thumbnail are blocked on every activity (FLAG_SECURE), independent of the lock setting. All network traffic is routed through the embedded Tor daemon on 127.0.0.1:9050."
+                android:textColor="#FF888888"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:lineSpacingExtra="2dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

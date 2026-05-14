@@ -15,3 +15,13 @@ app-release.apk
 .weblate
 
 feature/about/src/main/assets/PRIVACY.md
+signing.properties
+
+# Anon Social — added on Phase 6 publish
+signing.properties
+signing-beta.gradle
+*.p12
+*.jks
+*.keystore
+*.bks
+keystore.properties

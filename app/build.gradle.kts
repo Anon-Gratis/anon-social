@@ -16,6 +16,7 @@
  */
 
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.pachli.android.application)
@@ -47,6 +48,22 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    // Anon Social — release signing. Reads from app/signing.properties
+    // (gitignored). Same pattern as the other Anon apps.
+    val signingProps = file("signing.properties")
+    if (signingProps.exists()) {
+        val props = Properties()
+        signingProps.inputStream().use { props.load(it) }
+        signingConfigs {
+            create("release") {
+                storeFile     = file(props.getProperty("keystore"))
+                storePassword = props.getProperty("keystore.password")
+                keyAlias      = props.getProperty("keystore.alias")
+                keyPassword   = props.getProperty("keystore.password")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isDefault = true
@@ -56,6 +73,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (signingProps.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -196,6 +216,26 @@ dependencies {
     implementation(libs.bundles.filemojicompat)
 
     implementation(libs.unified.push)
+
+    // Embedded Tor (same lib as Anon Mail / Mumble / WhistleBlower).
+    // Pinned hardcoded rather than via libs.versions.toml since we don't
+    // pull anything else from this maven repo; keeps the change isolated.
+    implementation("info.guardianproject:tor-android:0.4.8.16")
+    implementation("info.guardianproject:jtorctl:0.4.5.7")
+
+    // App-lock (same stack as Anon PGP / Mail / VPN / WhistleBlower).
+    // EncryptedSharedPreferences for PIN hash + Biometric prompt for the
+    // optional fingerprint/face shortcut. lifecycle-process already comes
+    // in transitively from androidx.lifecycle 2.10.0.
+    //
+    // Excluding `tink-android` because Pachli's stack already pulls the
+    // newer unified `tink:1.17.0` artifact for crypto elsewhere, and the
+    // two collide at dex time. `tink` (1.17.0) provides the same API
+    // surface security-crypto needs at runtime on Android.
+    implementation("androidx.security:security-crypto:1.1.0-alpha06") {
+        exclude(group = "com.google.crypto.tink", module = "tink-android")
+    }
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     implementation(libs.bundles.xmldiff)
 

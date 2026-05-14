@@ -119,6 +119,14 @@ class LoginActivity : BaseActivity() {
             binding.domainEditText.setSelection(BuildConfig.CUSTOM_INSTANCE.length)
         }
 
+        // Hard-pin the instance: Anon Social ships pre-configured for
+        // social.anonymous.gratis. Hide the instance picker + the "what's an
+        // instance?" help — there's no decision for the user to make.
+        if (BuildConfig.CUSTOM_INSTANCE.isNotBlank() && authenticationDomain == null) {
+            binding.domainTextInputLayout.visibility = android.view.View.GONE
+            binding.whatsAnInstanceTextView.visibility = android.view.View.GONE
+        }
+
         authenticationDomain?.let { domain ->
             binding.domainEditText.setText(domain)
             binding.domainEditText.isEnabled = false

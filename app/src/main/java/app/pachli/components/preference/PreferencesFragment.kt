@@ -546,6 +546,23 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                 }
             }
 
+            // Anon Social — app-lock + panic wipe settings.
+            preferenceCategory(R.string.anon_pref_category_security) {
+                preference {
+                    setTitle(R.string.anon_pref_title_app_lock)
+                    setSummary(R.string.anon_pref_summary_app_lock)
+                    setOnPreferenceClickListener {
+                        startActivity(
+                            android.content.Intent(
+                                this@PreferencesFragment.requireContext(),
+                                app.pachli.anonsocial.SecurityActivity::class.java,
+                            ),
+                        )
+                        true
+                    }
+                }
+            }
+
             preferenceCategory(R.string.pref_title_update_settings) {
                 it.icon = makeIcon(GoogleMaterial.Icon.gmd_upgrade)
 

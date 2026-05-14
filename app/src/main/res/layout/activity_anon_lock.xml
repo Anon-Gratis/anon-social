@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FF000000"
+    android:gravity="center_horizontal"
+    android:padding="24dp">
+
+    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="// ANON SOCIAL"
+        android:textColor="#FF00C853"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:letterSpacing="0.08" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOCKED"
+        android:textColor="#FF888888"
+        android:textSize="12sp"
+        android:fontFamily="monospace"
+        android:letterSpacing="0.3"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="32dp" />
+
+    <EditText
+        android:id="@+id/anon_pinField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="enter PIN"
+        android:textColor="#FFFFFFFF"
+        android:textColorHint="#FF888888"
+        android:textSize="20sp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:letterSpacing="0.2"
+        android:inputType="numberPassword"
+        android:maxLength="12"
+        android:background="#FF1A1A1A"
+        android:padding="16dp"
+        android:importantForAutofill="no"
+        android:autofillHints="" />
+
+    <TextView
+        android:id="@+id/anon_pinError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#FFFF0000"
+        android:textSize="11sp"
+        android:fontFamily="monospace"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/anon_unlockBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[ UNLOCK ]"
+        android:fontFamily="monospace"
+        android:textStyle="bold"
+        android:backgroundTint="#FFFFFFFF"
+        android:textColor="#FF000000"
+        android:layout_marginTop="24dp" />
+
+    <Button
+        android:id="@+id/anon_biometricBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[ USE BIOMETRIC ]"
+        android:fontFamily="monospace"
+        android:backgroundTint="#00000000"
+        android:textColor="#FFFFFFFF"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
+    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="2" />
+
+    <TextView
+        android:id="@+id/anon_panicLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="[ panic · wipe everything ]"
+        android:textColor="#FFFF0000"
+        android:textSize="11sp"
+        android:fontFamily="monospace"
+        android:letterSpacing="0.08"
+        android:padding="12dp"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="no PIN recovery · forgotten PIN means clearing app data"
+        android:textColor="#FF888888"
+        android:textSize="10sp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+</LinearLayout>
