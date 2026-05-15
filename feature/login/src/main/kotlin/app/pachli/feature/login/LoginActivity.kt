@@ -122,9 +122,22 @@ class LoginActivity : BaseActivity() {
         // Hard-pin the instance: Anon Social ships pre-configured for
         // social.anonymous.gratis. Hide the instance picker + the "what's an
         // instance?" help — there's no decision for the user to make.
+        // Also surface a "// CREATE ACCOUNT" button that opens the GoToSocial
+        // /signup page in the system browser. Only shown when the instance is
+        // hard-pinned (otherwise we don't know the signup URL).
         if (BuildConfig.CUSTOM_INSTANCE.isNotBlank() && authenticationDomain == null) {
             binding.domainTextInputLayout.visibility = android.view.View.GONE
             binding.whatsAnInstanceTextView.visibility = android.view.View.GONE
+            binding.createAccountButton.visibility = android.view.View.VISIBLE
+            binding.createAccountButton.setOnClickListener {
+                val signupUrl = "https://${BuildConfig.CUSTOM_INSTANCE}/signup"
+                startActivity(
+                    android.content.Intent(
+                        android.content.Intent.ACTION_VIEW,
+                        android.net.Uri.parse(signupUrl),
+                    ),
+                )
+            }
         }
 
         authenticationDomain?.let { domain ->

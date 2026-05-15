@@ -18,6 +18,7 @@
     <string name="error_loading_account_details_fmt">Failed loading account details: %1$s</string>
     <string name="hint_domain">Which instance?</string>
     <string name="action_login">Login with Pachli</string>
+    <string name="action_create_account">// CREATE ACCOUNT</string>
     <string name="link_whats_an_instance">What\'s an instance?</string>
     <string name="login_connection">Connecting…</string>
     <string name="title_login">Login</string>
