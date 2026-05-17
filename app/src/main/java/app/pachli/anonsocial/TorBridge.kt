@@ -58,9 +58,18 @@ object TorBridge {
      *   Anon WhistleBlower → 9450
      *   Anon Social      → 9550   (this app)
      *
-     * Setting [org.torproject.jni.TorService.socksPort] before bindService()
-     * makes the AAR write `SOCKSPort 9550` into the auto-generated torrc.
-     * The OkHttp Proxy in NetworkModule.kt MUST match this value.
+     * Wiring (verified by decompiling tor-android 0.4.8.16):
+     *   - The AAR's private setDefaultProxyPorts() hardcodes "SOCKSPort 9050"
+     *     (or "auto" when 9050 is taken) into the auto-generated
+     *     torrc-defaults file. It does NOT honor TorService.socksPort —
+     *     that's a read-back field populated by getSocksPort(), not a
+     *     config knob.
+     *   - Tor parses torrc-defaults first, then torrc. Multiple SOCKSPort
+     *     directives are additive: Tor opens a listener on each one that
+     *     binds successfully and warns on the others.
+     * So to actually bind 9550 we pre-write the user torrc with
+     * "SOCKSPort 9550\n" before bindService(). Whichever of {9050, auto-
+     * random} the defaults give us is fine — OkHttp targets 9550 either way.
      */
     const val SOCKS_HOST = "127.0.0.1"
     const val SOCKS_PORT = 9550
@@ -76,9 +85,11 @@ object TorBridge {
 
     fun start(context: Context) {
         if (connection != null) return
-        // Override the AAR's default 9050 BEFORE the service starts. TorService
-        // reads its socksPort static field when generating torrc, so this must
-        // happen pre-bindService. See SOCKS_PORT KDoc for the cross-app plan.
+        // Pre-write the user torrc with our per-app SOCKSPort BEFORE bindService.
+        // See SOCKS_PORT KDoc for why the static-field override doesn't work.
+        writeUserTorrc(context.applicationContext)
+        // Also set the static field so anything that calls TorService.getSocksPort()
+        // reads back our port instead of a stale 0/9050.
         org.torproject.jni.TorService.socksPort = SOCKS_PORT
         installStatusReceiver(context.applicationContext)
         Handler(Looper.getMainLooper()).postDelayed({
@@ -101,6 +112,17 @@ object TorBridge {
                 Log.e(TAG, "could not bind embedded Tor", t)
             }
         }, 2000L)
+    }
+
+    private fun writeUserTorrc(ctx: Context) {
+        try {
+            val torrc = org.torproject.jni.TorService.getTorrc(ctx)
+            torrc.parentFile?.mkdirs()
+            torrc.writeText("SOCKSPort $SOCKS_PORT\n")
+            Log.d(TAG, "wrote user torrc → $torrc with SOCKSPort $SOCKS_PORT")
+        } catch (t: Throwable) {
+            Log.e(TAG, "failed to write user torrc", t)
+        }
     }
 
     private fun installStatusReceiver(ctx: Context) {
