@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright 2024 Pachli Association
-  ~
-  ~ This file is a part of Pachli.
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it under the terms of the
-  ~ GNU General Public License as published by the Free Software Foundation; either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ Pachli is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-  ~ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-  ~ Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License along with Pachli; if not,
-  ~ see <http://www.gnu.org/licenses>.
-  -->
-
+<!-- Anon Social login screen — themed to match anonymous.gratis:
+     pure black background, monospace, white/red accents, bracket-style buttons.
+     IDs preserved so LoginActivity.kt bindings stay valid; the round-logo
+     ImageView is kept but hidden so the binding ref remains live. -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context="app.pachli.feature.login.LoginActivity">
 
     <androidx.core.widget.NestedScrollView
@@ -35,31 +23,79 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="16dp">
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="72dp"
+            android:paddingBottom="32dp">
 
+            <!-- Round Pachli logo kept hidden so LoginActivity's
+                 binding.loginLogo reference stays valid. -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/loginLogo"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:layout_marginBottom="50dp"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:visibility="gone"
                 android:contentDescription="@null"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.M3.Sys.Shape.Corner.Full"
                 app:srcCompat="@mipmap/ic_launcher_round" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="// ANON SOCIAL"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.06"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="social.anonymous.gratis"
+                android:textColor="#888888"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:layout_marginBottom="36dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="─────────────────"
+                android:textColor="#444444"
+                android:textSize="14sp"
+                android:fontFamily="monospace"
+                android:layout_marginBottom="28dp" />
+
+            <TextView
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:text="federated. tor-routed. no SMTP, no recovery email, no phone. signing keys off-box."
+                android:textColor="#CCCCCC"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:lineSpacingMultiplier="1.4"
+                android:textAlignment="center"
+                android:layout_marginBottom="36dp" />
 
             <LinearLayout
                 android:id="@+id/loginInputLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/domainTextInputLayout"
-                    style="@style/AppTextInput"
-                    android:layout_width="250dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_domain"
+                    android:textColorHint="#888888"
+                    app:boxStrokeColor="#FFFFFF"
+                    app:hintTextColor="#FFFFFF"
+                    app:boxStrokeErrorColor="#FF0000"
+                    app:errorTextColor="#FF0000"
                     app:errorEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -67,34 +103,59 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
+                        android:fontFamily="monospace"
+                        android:textColor="#FFFFFF"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/loginButton"
-                    style="@style/AppButton"
-                    android:layout_width="250dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     android:gravity="center"
-                    android:text="@string/action_login" />
+                    android:text="[ LOGIN ]"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.08"
+                    app:strokeColor="#FFFFFF"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="0dp"
+                    app:rippleColor="#33FFFFFF"
+                    app:backgroundTint="#000000" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/createAccountButton"
-                    style="@style/AppButton.TextButton"
-                    android:layout_width="250dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="@string/action_create_account"
+                    android:text="[ // CREATE ACCOUNT ]"
+                    android:textColor="#FF0000"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.08"
+                    app:strokeColor="#FF0000"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="0dp"
+                    app:rippleColor="#33FF0000"
+                    app:backgroundTint="#000000"
                     android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/whatsAnInstanceTextView"
-                    android:layout_width="250dp"
+                    android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
+                    android:paddingTop="12dp"
                     android:text="@string/link_whats_an_instance"
+                    android:textColor="#888888"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
                     android:textAlignment="center" />
             </LinearLayout>
 
@@ -103,26 +164,58 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 android:visibility="gone">
 
                 <ProgressBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:indeterminateTint="#FFFFFF" />
 
                 <TextView
-                    android:layout_width="250dp"
+                    android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
+                    android:paddingTop="12dp"
                     android:text="@string/login_connection"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
                     android:textAlignment="center" />
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="─────────────────"
+                android:textColor="#444444"
+                android:textSize="14sp"
+                android:fontFamily="monospace"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="14dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="pgp: D1B6 F514 EB01 BA1E"
+                android:textColor="#666666"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.05" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5486 740E E03B 35EB 06E1 136F"
+                android:textColor="#666666"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.05"
+                android:layout_marginTop="2dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- This has to appear at the end of the layout so it is drawn *over* the
-         logo. The transparent background here ensures the logo shows through. -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
@@ -133,7 +226,9 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            android:layout_height="?attr/actionBarSize"
+            app:titleTextColor="#FFFFFF"
+            android:background="@android:color/transparent" />
     </com.google.android.material.appbar.AppBarLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

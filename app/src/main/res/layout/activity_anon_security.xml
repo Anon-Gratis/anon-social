@@ -123,7 +123,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Screenshots + the Recent Apps thumbnail are blocked on every activity (FLAG_SECURE), independent of the lock setting. All network traffic is routed through the embedded Tor daemon on 127.0.0.1:9050."
+                android:text="Screenshots + the Recent Apps thumbnail are blocked on every activity (FLAG_SECURE), independent of the lock setting. All network traffic is routed through the embedded Tor daemon on 127.0.0.1:9550."
                 android:textColor="#FF888888"
                 android:textSize="11sp"
                 android:fontFamily="monospace"

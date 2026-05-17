@@ -39,8 +39,8 @@ android {
 
     defaultConfig {
         applicationId = "gratis.anon.social"
-        versionCode = 4
-        versionName = "0.1.3"
+        versionCode = 10
+        versionName = "0.1.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"

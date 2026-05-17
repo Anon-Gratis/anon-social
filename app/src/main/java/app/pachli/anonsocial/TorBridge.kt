@@ -42,9 +42,28 @@ object TorBridge {
     const val STATUS_STARTING = "STARTING"
     const val STATUS_STOPPING = "STOPPING"
 
-    /** SOCKS5 host:port the embedded Tor binds to. */
+    /**
+     * SOCKS5 host:port the embedded Tor binds to.
+     *
+     * Per-app port to avoid collisions when multiple Anon-Tor apps run on the
+     * same device — they all embed info.guardianproject:tor-android which
+     * defaults to 9050, so whichever app launches first wins the port and the
+     * rest fail silently with EADDRINUSE (tor binary exits, never broadcasts
+     * STATUS_ON, the host app's TorReadyInterceptor blocks forever).
+     *
+     * Assignments (keep in sync with the other Anon-Tor apps):
+     *   Anon XMPP        → 9050   (legacy default, unchanged)
+     *   Anon Mail        → 9150
+     *   Anon Mumble      → 9250
+     *   Anon WhistleBlower → 9450
+     *   Anon Social      → 9550   (this app)
+     *
+     * Setting [org.torproject.jni.TorService.socksPort] before bindService()
+     * makes the AAR write `SOCKSPort 9550` into the auto-generated torrc.
+     * The OkHttp Proxy in NetworkModule.kt MUST match this value.
+     */
     const val SOCKS_HOST = "127.0.0.1"
-    const val SOCKS_PORT = 9050
+    const val SOCKS_PORT = 9550
 
     @Volatile var status: String = "UNKNOWN"
         private set
@@ -57,12 +76,16 @@ object TorBridge {
 
     fun start(context: Context) {
         if (connection != null) return
+        // Override the AAR's default 9050 BEFORE the service starts. TorService
+        // reads its socksPort static field when generating torrc, so this must
+        // happen pre-bindService. See SOCKS_PORT KDoc for the cross-app plan.
+        org.torproject.jni.TorService.socksPort = SOCKS_PORT
         installStatusReceiver(context.applicationContext)
         Handler(Looper.getMainLooper()).postDelayed({
             try {
                 val conn = object : ServiceConnection {
                     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                        Log.d(TAG, "embedded Tor bound: $name")
+                        Log.d(TAG, "embedded Tor bound: $name (SOCKS $SOCKS_PORT)")
                     }
                     override fun onServiceDisconnected(name: ComponentName?) {
                         Log.w(TAG, "embedded Tor disconnected: $name")
@@ -73,7 +96,7 @@ object TorBridge {
                 val ok = context.applicationContext.bindService(
                     intent, conn, Context.BIND_AUTO_CREATE
                 )
-                Log.d(TAG, "embedded Tor bindService -> $ok")
+                Log.d(TAG, "embedded Tor bindService -> $ok (SOCKS $SOCKS_PORT)")
             } catch (t: Throwable) {
                 Log.e(TAG, "could not bind embedded Tor", t)
             }
@@ -86,6 +109,13 @@ object TorBridge {
             override fun onReceive(c: Context?, intent: Intent?) {
                 val s = intent?.getStringExtra(EXTRA_STATUS) ?: return
                 status = s
+                // Cross-module signal for core/network's TorReadyInterceptor —
+                // releases blocked requests as soon as the first circuit is up.
+                when (s) {
+                    STATUS_ON -> app.pachli.core.network.TorReadiness.markReady()
+                    STATUS_OFF, STATUS_STOPPING ->
+                        app.pachli.core.network.TorReadiness.markNotReady()
+                }
                 synchronized(listeners) { listeners.toList() }.forEach { it(s) }
             }
         }

@@ -166,9 +166,12 @@ data class AccountEntity(
         get() = "Bearer $accessToken"
 }
 
+// Anon Social — this app is hard-pinned to a single instance, so the
+// Local timeline is effectively "the feed" for new arrivals. Landing on
+// Home first means an empty screen until the user goes hunting for posts.
 fun defaultTabs() = listOf(
+    Timeline.PublicLocal,
     Timeline.Home,
     Timeline.Notifications,
     Timeline.TrendingStatuses,
-    Timeline.Conversations,
 )

@@ -27,8 +27,11 @@ import androidx.work.WorkManager
 import app.pachli.core.activity.LogEntryTree
 import app.pachli.core.activity.TreeRing
 import app.pachli.core.activity.initCrashReporter
+import app.pachli.core.common.di.ApplicationScope
 import app.pachli.core.common.util.createWorkerNotificationChannel
+import app.pachli.core.data.repository.AccountManager
 import app.pachli.core.data.repository.DraftsRepository
+import kotlinx.coroutines.CoroutineScope
 import app.pachli.core.preferences.NEW_INSTALL_SCHEMA_VERSION
 import app.pachli.core.preferences.PrefKeys
 import app.pachli.core.preferences.SCHEMA_VERSION
@@ -67,6 +70,13 @@ class PachliApplication : Application() {
     @Inject
     lateinit var logEntryTree: LogEntryTree
 
+    @Inject
+    lateinit var accountManager: AccountManager
+
+    @Inject
+    @ApplicationScope
+    lateinit var applicationScope: CoroutineScope
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
 
@@ -89,9 +99,9 @@ class PachliApplication : Application() {
         Security.insertProviderAt(Conscrypt.newProvider(), 1)
 
         // Anon Social — start embedded Tor immediately so NetworkModule's
-        // OkHttp routes through 127.0.0.1:9050 SOCKS5 by the time the first
-        // network call happens. The bindService is deferred 2s internally to
-        // avoid racing the rest of app boot.
+        // OkHttp routes through the per-app SOCKS5 (see TorBridge.SOCKS_PORT)
+        // by the time the first network call happens. The bindService is
+        // deferred 2s internally to avoid racing the rest of app boot.
         app.pachli.anonsocial.TorBridge.start(this)
 
         // App-lock wiring (matches Anon PGP 0.3.6 / Anon Mail 0.8.5):
@@ -115,6 +125,11 @@ class PachliApplication : Application() {
             },
         )
         registerActivityLifecycleCallbacks(app.pachli.anonsocial.AppLockGate(this))
+
+        // One-shot: existing accounts logged in before v0.1.4 still have the
+        // old default tabs in DB (Home, Notifications, Trending, Conversations)
+        // and never see the Local timeline without searching. Prepend it once.
+        app.pachli.anonsocial.DefaultTabsMigration.runIfNeeded(this, accountManager, applicationScope)
 
         when {
             BuildConfig.DEBUG -> Timber.plant(Timber.DebugTree())

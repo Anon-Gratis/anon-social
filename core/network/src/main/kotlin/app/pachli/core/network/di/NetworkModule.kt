@@ -92,9 +92,16 @@ object NetworkModule {
         // Anon Social: always route through the embedded Tor SOCKS5 proxy
         // bound by TorBridge. The .onion / clearnet hostname resolves inside
         // the Tor circuit so the device's resolver never sees it.
+        //
+        // Port 9550 is Anon Social's per-app SOCKS port — kept off the
+        // tor-android default (9050) so we don't collide with sibling
+        // Anon-Tor apps (XMPP/Mail/Mumble/Whistle), which would otherwise
+        // race for 9050 and leave whichever loses with a half-dead tor.
+        // Keep in sync with TorBridge.SOCKS_PORT (cross-module — both must
+        // match or every request fails with "Connection refused").
         val torProxy = Proxy(
             Proxy.Type.SOCKS,
-            InetSocketAddress("127.0.0.1", 9050),
+            InetSocketAddress("127.0.0.1", 9550),
         )
         val builder = OkHttpClient.Builder()
             .proxy(torProxy)
@@ -112,8 +119,17 @@ object NetworkModule {
                     .build()
                 chain.proceed(requestWithUserAgent)
             }
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            // Anon Social: gate every request on Tor being ON. Cold-launch
+            // first call would otherwise race the 5–30s Tor bootstrap and
+            // fail with "Connect timed out" because the SOCKS5 stream can't
+            // open before circuits exist. After Tor is up this interceptor
+            // is a no-op.
+            .addInterceptor(app.pachli.core.network.TorReadyInterceptor())
+            // Bumped from OkHttp's default 10s connect timeout — the SOCKS5
+            // tunnel + Tor circuit handshake can legitimately take 30–60s.
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .cache(Cache(context.cacheDir, cacheSize))
 
         if (httpProxyEnabled) {
